@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TradeSeeker - 外贸选品 & 1688货源匹配工具</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #f0f3f8;
+  --surface: #ffffff;
+  --surface-alt: #f7f8fc;
+  --primary: #4f6ef7;
+  --primary-light: #eef1fe;
+  --primary-dark: #3b54d4;
+  --accent: #10b981;
+  --accent-light: #ecfdf5;
+  --warning: #f59e0b;
+  --warning-light: #fffbeb;
+  --danger: #ef4444;
+  --danger-light: #fef2f2;
+  --text: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.04);
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 6px rgba(0,0,0,.04), 0 2px 4px rgba(0,0,0,.04);
+  --shadow-lg: 0 10px 25px rgba(0,0,0,.06), 0 4px 10px rgba(0,0,0,.04);
+  --shadow-xl: 0 20px 50px rgba(0,0,0,.08);
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --transition: 0.2s cubic-bezier(.4,0,.2,1);
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; scroll-behavior: smooth; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Layout */
+.app-container { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 240px; background: var(--surface); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh;
+  z-index: 100; transition: transform var(--transition); flex-shrink: 0;
+}
+.main-content { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+/* Sidebar */
+.sidebar-logo {
+  padding: 20px 24px; display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--border-light);
+}
+.sidebar-logo .logo-icon {
+  width: 40px; height: 40px; border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--primary), #818cf8);
+  display: flex; align-items: center; justify-content: center; color: #fff;
+  font-size: 20px; font-weight: 700; flex-shrink: 0;
+}
+.sidebar-logo .logo-text { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -.3px; }
+.sidebar-logo .logo-text span { color: var(--primary); }
+
+.sidebar-nav { padding: 12px; flex: 1; overflow-y: auto; }
+.nav-section { margin-bottom: 8px; }
+.nav-section-title {
+  padding: 8px 12px 4px; font-size: 11px; font-weight: 600; text-transform: uppercase;
+  color: var(--text-muted); letter-spacing: .8px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+  border-radius: var(--radius-sm); cursor: pointer; color: var(--text-secondary);
+  font-size: 14px; font-weight: 500; transition: all var(--transition);
+  margin-bottom: 2px;
+}
+.nav-item:hover { background: var(--primary-light); color: var(--primary); }
+.nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+.nav-item i { width: 20px; text-align: center; font-size: 15px; }
+.nav-badge {
+  margin-left: auto; background: var(--accent); color: #fff; font-size: 10px;
+  padding: 2px 7px; border-radius: 10px; font-weight: 600;
+}
+
+.sidebar-footer {
+  padding: 12px; border-top: 1px solid var(--border-light);
+}
+.user-badge {
+  display: flex; align-items: center; gap: 10px; padding: 8px 12px;
+  border-radius: var(--radius-sm); cursor: pointer; transition: all var(--transition);
+}
+.user-badge:hover { background: var(--surface-alt); }
+.user-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #a78bfa);
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 600;
+}
+.user-info { font-size: 13px; }
+.user-info .name { font-weight: 600; color: var(--text); }
+.user-info .role { font-size: 11px; color: var(--text-muted); }
+
+/* Header */
+.header {
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 14px 28px; display: flex; align-items: center; gap: 16px;
+  position: sticky; top: 0; z-index: 50;
+}
+.header-search {
+  flex: 1; max-width: 480px; position: relative;
+}
+.header-search input {
+  width: 100%; padding: 10px 16px 10px 42px; border: 1px solid var(--border);
+  border-radius: 24px; font-size: 14px; background: var(--surface-alt);
+  transition: all var(--transition); outline: none; font-family: var(--font-sans);
+}
+.header-search input:focus {
+  border-color: var(--primary); background: var(--surface);
+  box-shadow: 0 0 0 3px rgba(79,110,247,.1);
+}
+.header-search i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 15px; }
+.header-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.header-btn {
+  width: 38px; height: 38px; border-radius: 50%; border: none; background: transparent;
+  cursor: pointer; color: var(--text-secondary); font-size: 17px; transition: all var(--transition);
+  display: flex; align-items: center; justify-content: center;
+}
+.header-btn:hover { background: var(--surface-alt); color: var(--primary); }
+.search-count {
+  font-size: 12px; color: var(--text-muted); padding: 6px 12px;
+  background: var(--surface-alt); border-radius: 16px; white-space: nowrap;
+}
+
+/* Page */
+.page { display: none; padding: 28px; }
+.page.active { display: block; animation: fadeSlideIn .35s ease; }
+@keyframes fadeSlideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Cards */
+.card {
+  background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm); transition: all var(--transition);
+}
+.card:hover { box-shadow: var(--shadow-md); }
+.card-header {
+  padding: 18px 24px; border-bottom: 1px solid var(--border-light);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-header h3 { font-size: 16px; font-weight: 600; }
+.card-body { padding: 20px 24px; }
+
+/* Stats Grid */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.stat-card {
+  background: var(--surface); border-radius: var(--radius-lg); padding: 20px 24px;
+  border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+  display: flex; align-items: center; gap: 16px;
+}
+.stat-icon {
+  width: 48px; height: 48px; border-radius: var(--radius); display: flex;
+  align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;
+}
+.stat-icon.blue { background: var(--primary-light); color: var(--primary); }
+.stat-icon.green { background: var(--accent-light); color: var(--accent); }
+.stat-icon.amber { background: var(--warning-light); color: var(--warning); }
+.stat-icon.red { background: var(--danger-light); color: var(--danger); }
+.stat-value { font-size: 24px; font-weight: 700; line-height: 1.2; }
+.stat-label { font-size: 13px; color: var(--text-secondary); }
+
+/* Platform tabs */
+.platform-tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+.platform-tab {
+  padding: 10px 20px; border-radius: 24px; border: 1px solid var(--border);
+  background: var(--surface); cursor: pointer; font-size: 13px; font-weight: 500;
+  color: var(--text-secondary); transition: all var(--transition); white-space: nowrap;
+  display: flex; align-items: center; gap: 7px;
+}
+.platform-tab:hover { border-color: var(--primary); color: var(--primary); }
+.platform-tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.platform-tab i { font-size: 15px; }
+
+/* Filters */
+.filters-row {
+  display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center;
+}
+.filter-select, .filter-input {
+  padding: 9px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 13px; color: var(--text); background: var(--surface); outline: none;
+  transition: all var(--transition); font-family: var(--font-sans);
+}
+.filter-select:focus, .filter-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,110,247,.08); }
+.filter-input { width: 100px; }
+.filter-select { min-width: 130px; }
+
+/* Buttons */
+.btn {
+  padding: 10px 20px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500;
+  border: none; cursor: pointer; transition: all var(--transition); display: inline-flex;
+  align-items: center; gap: 6px; font-family: var(--font-sans); white-space: nowrap;
+}
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-dark); box-shadow: var(--shadow-md); }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.btn-outline:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+.btn-accent { background: var(--accent); color: #fff; }
+.btn-accent:hover { background: #059669; }
+.btn-sm { padding: 6px 14px; font-size: 12px; }
+.btn-lg { padding: 12px 28px; font-size: 15px; }
+
+/* Product Grid */
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.product-card {
+  background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border);
+  overflow: hidden; transition: all var(--transition); cursor: pointer; position: relative;
+}
+.product-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+.product-img {
+  width: 100%; height: 200px; object-fit: cover; background: var(--surface-alt);
+  display: flex; align-items: center; justify-content: center; color: var(--text-muted);
+  font-size: 40px;
+}
+.product-badge {
+  position: absolute; top: 12px; left: 12px; padding: 4px 10px;
+  border-radius: 12px; font-size: 11px; font-weight: 600; color: #fff;
+}
+.badge-hot { background: var(--danger); }
+.badge-new { background: var(--primary); }
+.badge-rising { background: var(--warning); }
+.product-info { padding: 14px 16px; }
+.product-title {
+  font-size: 14px; font-weight: 500; line-height: 1.4; margin-bottom: 8px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.product-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.product-price { font-size: 18px; font-weight: 700; color: var(--danger); }
+.product-currency { font-size: 11px; color: var(--text-muted); font-weight: 400; }
+.product-stats { display: flex; gap: 12px; font-size: 12px; color: var(--text-secondary); }
+.product-stats span { display: flex; align-items: center; gap: 4px; }
+.product-footer { padding: 12px 16px; border-top: 1px solid var(--border-light); display: flex; gap: 8px; }
+.product-footer .btn { flex: 1; justify-content: center; font-size: 12px; }
+
+/* Modal */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.4); backdrop-filter: blur(4px);
+  z-index: 1000; display: flex; align-items: center; justify-content: center;
+  animation: fadeIn .2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.modal {
+  background: var(--surface); border-radius: var(--radius-xl); width: 90%; max-width: 800px;
+  max-height: 85vh; overflow-y: auto; box-shadow: var(--shadow-xl); animation: modalIn .3s ease;
+}
+@keyframes modalIn { from { opacity: 0; transform: scale(.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+.modal-header {
+  padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex;
+  align-items: center; justify-content: space-between; position: sticky; top: 0;
+  background: var(--surface); border-radius: var(--radius-xl) var(--radius-xl) 0 0; z-index: 1;
+}
+.modal-header h2 { font-size: 18px; font-weight: 600; }
+.modal-close {
+  width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--surface-alt);
+  cursor: pointer; font-size: 18px; color: var(--text-secondary); transition: all var(--transition);
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-close:hover { background: var(--danger-light); color: var(--danger); }
+.modal-body { padding: 24px; }
+
+/* Profit Calculator */
+.calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.calc-section { margin-bottom: 20px; }
+.calc-section h4 { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--text); }
+.calc-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.calc-row label { font-size: 13px; color: var(--text-secondary); flex-shrink: 0; margin-right: 12px; }
+.calc-row input {
+  width: 140px; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 13px; text-align: right; outline: none; font-family: var(--font-sans);
+  transition: all var(--transition);
+}
+.calc-row input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,110,247,.08); }
+.calc-result {
+  background: linear-gradient(135deg, var(--primary-light), #f0f4ff);
+  border-radius: var(--radius-lg); padding: 24px; margin-top: 16px;
+}
+.calc-result .profit-value { font-size: 32px; font-weight: 700; color: var(--primary-dark); }
+.calc-result .profit-detail { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+.calc-result .detail-item { text-align: center; }
+.calc-result .detail-value { font-size: 18px; font-weight: 600; }
+.calc-result .detail-label { font-size: 12px; color: var(--text-muted); }
+.profit-badge {
+  display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 600;
+}
+.profit-high { background: var(--accent-light); color: var(--accent); }
+.profit-mid { background: var(--warning-light); color: var(--warning); }
+.profit-low { background: var(--danger-light); color: var(--danger); }
+
+/* Source list */
+.source-list { display: flex; flex-direction: column; gap: 12px; }
+.source-item {
+  display: flex; gap: 16px; padding: 16px; border: 1px solid var(--border);
+  border-radius: var(--radius-lg); transition: all var(--transition); align-items: center;
+}
+.source-item:hover { border-color: var(--primary); box-shadow: var(--shadow-sm); }
+.source-img {
+  width: 80px; height: 80px; border-radius: var(--radius-sm); object-fit: cover;
+  background: var(--surface-alt); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 28px;
+}
+.source-info { flex: 1; min-width: 0; }
+.source-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.source-meta { font-size: 12px; color: var(--text-secondary); display: flex; gap: 16px; flex-wrap: wrap; }
+.source-price { font-size: 18px; font-weight: 700; color: var(--danger); white-space: nowrap; }
+.source-actions { display: flex; flex-direction: column; gap: 6px; }
+
+/* User Center */
+.user-layout { display: grid; grid-template-columns: 240px 1fr; gap: 24px; }
+.user-menu {
+  background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border);
+  padding: 8px; box-shadow: var(--shadow-sm);
+}
+.user-menu-item {
+  padding: 10px 14px; border-radius: var(--radius-sm); cursor: pointer; font-size: 14px;
+  color: var(--text-secondary); transition: all var(--transition); display: flex; align-items: center; gap: 10px;
+}
+.user-menu-item:hover, .user-menu-item.active { background: var(--primary-light); color: var(--primary); font-weight: 500; }
+.user-panel { min-width: 0; }
+.plan-card {
+  padding: 20px; border-radius: var(--radius-lg); border: 2px solid var(--border);
+  text-align: center; transition: all var(--transition); cursor: pointer;
+}
+.plan-card:hover { border-color: var(--primary); }
+.plan-card.current { border-color: var(--primary); background: var(--primary-light); }
+.plan-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.plan-price { font-size: 28px; font-weight: 700; color: var(--primary); }
+.plan-price span { font-size: 14px; color: var(--text-muted); font-weight: 400; }
+.plan-features { list-style: none; padding: 0; margin: 12px 0; }
+.plan-features li { padding: 4px 0; font-size: 13px; color: var(--text-secondary); }
+.plan-features li i { color: var(--accent); margin-right: 6px; }
+
+/* Profile card */
+.profile-header {
+  display: flex; align-items: center; gap: 20px; padding: 24px;
+  background: linear-gradient(135deg, #eff6ff, #eef2ff); border-radius: var(--radius-lg);
+  margin-bottom: 20px;
+}
+.profile-avatar {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), #a78bfa);
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 30px; font-weight: 700; flex-shrink: 0;
+}
+
+/* Login form */
+.login-container {
+  max-width: 420px; margin: 60px auto; background: var(--surface); border-radius: var(--radius-xl);
+  padding: 40px; box-shadow: var(--shadow-lg); border: 1px solid var(--border);
+}
+.login-container h2 { font-size: 22px; font-weight: 700; text-align: center; margin-bottom: 8px; }
+.login-container .subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 24px; font-size: 14px; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: var(--text); }
+.form-group input {
+  width: 100%; padding: 11px 16px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 14px; outline: none; font-family: var(--font-sans); transition: all var(--transition);
+}
+.form-group input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,110,247,.08); }
+
+/* Tabs */
+.tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border-light); margin-bottom: 20px; }
+.tab {
+  padding: 12px 20px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--text-secondary);
+  border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all var(--transition);
+}
+.tab:hover { color: var(--primary); }
+.tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+/* Tags */
+.tag {
+  display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px;
+  font-weight: 500; background: var(--surface-alt); color: var(--text-secondary);
+}
+.tag.green { background: var(--accent-light); color: var(--accent); }
+.tag.blue { background: var(--primary-light); color: var(--primary); }
+
+/* Footer compliance */
+.compliance-footer {
+  padding: 16px 24px; font-size: 11px; color: var(--text-muted); text-align: center;
+  border-top: 1px solid var(--border-light); line-height: 1.8; margin-top: auto;
+}
+
+/* Chart container */
+.chart-container { position: relative; height: 240px; margin: 16px 0; }
+
+/* Tooltip */
+.tooltip { position: relative; }
+.tooltip::after { display: none; }
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .calc-grid { grid-template-columns: 1fr; }
+  .user-layout { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .sidebar { position: fixed; left: -260px; }
+  .sidebar.open { left: 0; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .product-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  .header { padding: 12px 16px; }
+  .page { padding: 16px; }
+  .filters-row { gap: 8px; }
+  .platform-tab { padding: 8px 14px; font-size: 12px; }
+  .calc-result .profit-detail { grid-template-columns: 1fr 1fr; }
+  .mobile-menu-btn { display: flex !important; }
+}
+.mobile-menu-btn {
+  width: 38px; height: 38px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+  cursor: pointer; background: var(--surface); display: none; align-items: center; justify-content: center;
+  font-size: 18px; color: var(--text);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+/* Empty state */
+.empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+.empty-state i { font-size: 48px; margin-bottom: 16px; opacity: .4; }
+.empty-state p { font-size: 14px; }
+
+/* Ranking list */
+.rank-table { width: 100%; border-collapse: collapse; }
+.rank-table th {
+  text-align: left; padding: 10px 14px; font-size: 12px; font-weight: 600;
+  color: var(--text-muted); border-bottom: 1px solid var(--border); text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.rank-table td { padding: 12px 14px; font-size: 13px; border-bottom: 1px solid var(--border-light); }
+.rank-table tbody tr { transition: all var(--transition); cursor: pointer; }
+.rank-table tbody tr:hover { background: var(--surface-alt); }
+.rank-num { font-weight: 700; color: var(--text-muted); }
+.rank-num.top3 { color: var(--primary); }
+</style>
+</head>
+<body>
+
+<div class="app-container">
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">T</div>
+    <div class="logo-text">Trade<span>Seeker</span></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-section-title">核心功能</div>
+      <div class="nav-item active" data-page="dashboard">
+        <i class="fas fa-th-large"></i> 数据看板
+      </div>
+      <div class="nav-item" data-page="products">
+        <i class="fas fa-fire"></i> 爆款选品
+      </div>
+      <div class="nav-item" data-page="matching">
+        <i class="fas fa-link"></i> 货源匹配
+      </div>
+      <div class="nav-item" data-page="calculator">
+        <i class="fas fa-calculator"></i> 利润测算
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">个人中心</div>
+      <div class="nav-item" data-page="favorites">
+        <i class="fas fa-star"></i> 我的收藏
+      </div>
+      <div class="nav-item" data-page="profile">
+        <i class="fas fa-user-circle"></i> 账户中心
+      </div>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-badge" id="userBadge">
+      <div class="user-avatar" id="userAvatar">U</div>
+      <div class="user-info">
+        <div class="name" id="userName">游客用户</div>
+        <div class="role" id="userRole">今日剩余 5 次搜索</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="main-content">
+  <header class="header">
+    <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="header-search">
+      <i class="fas fa-search"></i>
+      <input type="text" id="globalSearch" placeholder="搜索海外爆款商品..." onkeydown="if(event.key==='Enter')globalSearchHandler()">
+    </div>
+    <div class="header-actions">
+      <div class="search-count" id="searchCount">剩余搜索: 5次</div>
+      <button class="header-btn" title="通知"><i class="fas fa-bell"></i></button>
+      <button class="header-btn" title="设置"><i class="fas fa-cog"></i></button>
+    </div>
+  </header>
+
+  <!-- Dashboard Page -->
+  <div class="page active" id="page-dashboard">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="fas fa-globe"></i></div>
+        <div>
+          <div class="stat-value">12,847</div>
+          <div class="stat-label">海外热销商品</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="fas fa-store"></i></div>
+        <div>
+          <div class="stat-value">3,926</div>
+          <div class="stat-label">1688匹配货源</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon amber"><i class="fas fa-chart-line"></i></div>
+        <div>
+          <div class="stat-value">847</div>
+          <div class="stat-label">今日飙升新品</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon red"><i class="fas fa-dollar-sign"></i></div>
+        <div>
+          <div class="stat-value">¥38.5</div>
+          <div class="stat-label">平均单品利润</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-header">
+        <h3><i class="fas fa-trophy" style="color:#f59e0b; margin-right:8px"></i>热销榜单 - 实时更新</h3>
+        <div class="platform-tabs" style="margin-bottom:0" id="dashboardTabs">
+          <div class="platform-tab active" data-platform="amazon" onclick="switchDashboardTab('amazon')"><i class="fab fa-amazon"></i> Amazon</div>
+          <div class="platform-tab" data-platform="temu" onclick="switchDashboardTab('temu')"><i class="fas fa-box"></i> Temu</div>
+          <div class="platform-tab" data-platform="shopee" onclick="switchDashboardTab('shopee')"><i class="fas fa-shopping-bag"></i> Shopee</div>
+          <div class="platform-tab" data-platform="tiktok" onclick="switchDashboardTab('tiktok')"><i class="fab fa-tiktok"></i> TikTok Shop</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <table class="rank-table" id="dashboardRankTable"></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Products Page -->
+  <div class="page" id="page-products">
+    <div class="platform-tabs" id="productPlatformTabs">
+      <div class="platform-tab active" data-platform="amazon" onclick="switchPlatform('amazon')"><i class="fab fa-amazon"></i> Amazon</div>
+      <div class="platform-tab" data-platform="temu" onclick="switchPlatform('temu')"><i class="fas fa-box"></i> Temu</div>
+      <div class="platform-tab" data-platform="shopee" onclick="switchPlatform('shopee')"><i class="fas fa-shopping-bag"></i> Shopee</div>
+      <div class="platform-tab" data-platform="lazada" onclick="switchPlatform('lazada')"><i class="fas fa-cart-shopping"></i> Lazada</div>
+      <div class="platform-tab" data-platform="tiktok" onclick="switchPlatform('tiktok')"><i class="fab fa-tiktok"></i> TikTok Shop</div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-list="hot" onclick="switchListType('hot')">热销榜 BSR</div>
+      <div class="tab" data-list="rising" onclick="switchListType('rising')">飙升榜</div>
+      <div class="tab" data-list="new" onclick="switchListType('new')">新品榜</div>
+    </div>
+
+    <div class="filters-row">
+      <select class="filter-select" id="filterCategory"><option value="">全部类目</option><option>家居厨房</option><option>电子产品</option><option>服装配饰</option><option>美妆个护</option><option>运动户外</option><option>宠物用品</option><option>玩具游戏</option></select>
+      <input class="filter-input" type="number" placeholder="最低价 $" id="filterPriceMin">
+      <input class="filter-input" type="number" placeholder="最高价 $" id="filterPriceMax">
+      <select class="filter-select" id="filterRating"><option value="">最低评分</option><option>4.5+</option><option>4.0+</option><option>3.5+</option></select>
+      <select class="filter-select" id="filterSales"><option value="">月销量</option><option>1000+</option><option>500+</option><option>100+</option></select>
+      <button class="btn btn-primary btn-sm" onclick="applyFilters()"><i class="fas fa-filter"></i> 筛选</button>
+      <button class="btn btn-outline btn-sm" onclick="resetFilters()"><i class="fas fa-rotate-right"></i> 重置</button>
+    </div>
+
+    <div class="product-grid" id="productGrid"></div>
+  </div>
+
+  <!-- Matching Page -->
+  <div class="page" id="page-matching">
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fas fa-magnifying-glass"></i> 1688货源智能匹配</h3>
+      </div>
+      <div class="card-body">
+        <div style="display:flex; gap:12px; margin-bottom:20px">
+          <input type="text" class="filter-input" id="matchKeyword" placeholder="输入商品关键词或粘贴标题..." style="flex:1">
+          <button class="btn btn-primary" onclick="searchSource()"><i class="fas fa-search"></i> 文字搜同款</button>
+          <button class="btn btn-outline" onclick="searchSourceByImage()"><i class="fas fa-image"></i> 图片搜同款</button>
+        </div>
+        <div class="filters-row">
+          <select class="filter-select"><option>不限起订量</option><option>1件起批</option><option>10件以内</option></select>
+          <select class="filter-select"><option>不限商家类型</option><option>实力商家</option><option>深度验厂</option></select>
+          <select class="filter-select"><option>综合排序</option><option>价格从低到高</option><option>销量从高到低</option></select>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-secondary)">
+            <input type="checkbox"> 一件代发
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-secondary)">
+            <input type="checkbox"> 支持跨境定制
+          </label>
+        </div>
+        <div class="source-list" id="sourceList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calculator Page -->
+  <div class="page" id="page-calculator">
+    <div class="card">
+      <div class="card-header"><h3><i class="fas fa-calculator"></i> 智能利润测算</h3></div>
+      <div class="card-body">
+        <div class="calc-grid">
+          <div>
+            <div class="calc-section">
+              <h4>收入参数</h4>
+              <div class="calc-row"><label>海外售价 ($)</label><input type="number" id="calcPrice" value="29.99" step="0.01"></div>
+              <div class="calc-row"><label>汇率 (USD→CNY)</label><input type="number" id="calcRate" value="7.25" step="0.01"></div>
+              <div class="calc-row"><label>人民币收入</label><span id="calcRevenue" style="font-weight:600">¥217.43</span></div>
+            </div>
+            <div class="calc-section">
+              <h4>成本参数</h4>
+              <div class="calc-row"><label>1688拿货价 (¥)</label><input type="number" id="calcCost" value="45.00" step="0.01"></div>
+              <div class="calc-row"><label>头程物流费 (¥)</label><input type="number" id="calcLogistics" value="18.00" step="0.01"></div>
+              <div class="calc-row"><label>平台佣金率 (%)</label><input type="number" id="calcCommission" value="15" step="0.1"></div>
+              <div class="calc-row"><label>包装杂费 (¥)</label><input type="number" id="calcPackaging" value="5.00" step="0.01"></div>
+              <div class="calc-row"><label>预估关税 (¥)</label><input type="number" id="calcTariff" value="8.00" step="0.01"></div>
+            </div>
+          </div>
+          <div>
+            <button class="btn btn-primary btn-lg" style="width:100%;margin-bottom:16px" onclick="calculateProfit()">
+              <i class="fas fa-calculator"></i> 开始测算
+            </button>
+            <div class="calc-result" id="calcResult">
+              <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px">预估净利润</div>
+              <div class="profit-value" id="profitValue">--</div>
+              <div><span class="profit-badge profit-mid" id="profitBadge">--</span></div>
+              <div class="profit-detail">
+                <div class="detail-item"><div class="detail-value" id="profitMargin">--</div><div class="detail-label">毛利率</div></div>
+                <div class="detail-item"><div class="detail-value" id="netMargin">--</div><div class="detail-label">净利率</div></div>
+                <div class="detail-item"><div class="detail-value" id="totalCost">--</div><div class="detail-label">总成本</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Favorites Page -->
+  <div class="page" id="page-favorites">
+    <div class="tabs">
+      <div class="tab active" onclick="switchFavTab('product')">收藏商品</div>
+      <div class="tab" onclick="switchFavTab('source')">收藏货源</div>
+      <div class="tab" onclick="switchFavTab('folder')">选品文件夹</div>
+    </div>
+    <div id="favContent"><div class="empty-state"><i class="fas fa-star"></i><p>暂无收藏，快去选品页面收藏商品吧</p></div></div>
+  </div>
+
+  <!-- Profile Page -->
+  <div class="page" id="page-profile">
+    <div class="user-layout">
+      <div class="user-menu">
+        <div class="user-menu-item active" onclick="switchProfileTab('info')"><i class="fas fa-user"></i> 个人信息</div>
+        <div class="user-menu-item" onclick="switchProfileTab('plan')"><i class="fas fa-crown"></i> 会员套餐</div>
+        <div class="user-menu-item" onclick="switchProfileTab('history')"><i class="fas fa-clock"></i> 历史记录</div>
+      </div>
+      <div class="user-panel" id="profilePanel"></div>
+    </div>
+  </div>
+
+  <div class="compliance-footer">
+    本工具数据仅用于跨境市场调研分析，不构成交易、投资、铺货建议。所有商品数据来源于官方授权API，仅供参考。平台交易、货源质量、物流风险由买卖双方自行承担。
+  </div>
+</div>
+
+</div>
+
+<!-- Product Detail Modal -->
+<div class="modal-overlay" id="productModal" style="display:none" onclick="if(event.target===this)closeProductModal()">
+  <div class="modal" id="productModalInner"></div>
+</div>
+
+<script>
+// ============ App State ============
+const state = {
+  currentPage: 'dashboard',
+  currentPlatform: 'amazon',
+  currentListType: 'hot',
+  userType: 'guest', // guest | registered | member
+  searchCount: 5,
+  favorites: { products: [], sources: [] },
+  folders: { '默认文件夹': [] },
+  history: []
+};
+
+// ============ Mock Data ============
+const platforms = {
+  amazon: { name: 'Amazon', icon: 'fab fa-amazon', color: '#ff9900' },
+  temu: { name: 'Temu', icon: 'fas fa-box', color: '#fb7701' },
+  shopee: { name: 'Shopee', icon: 'fas fa-shopping-bag', color: '#ee4d2d' },
+  lazada: { name: 'Lazada', icon: 'fas fa-cart-shopping', color: '#0f1470' },
+  tiktok: { name: 'TikTok Shop', icon: 'fab fa-tiktok', color: '#000' }
+};
+
+const products = [
+  { id:1, platform:'amazon', list:'hot', title:'Wireless Bluetooth Earbuds Pro - Active Noise Cancelling, 36H Battery Life, IPX7 Waterproof', price:49.99, currency:'USD', sales:12580, rating:4.7, reviews:3421, rank:1, image:'🎧', category:'电子产品', weight:'轻小件', asin:'B0XXXXXXX1', trend:[49,48,52,50,51,49,55,53,52,50,49,48], badge:'hot' },
+  { id:2, platform:'amazon', list:'hot', title:'Stainless Steel Insulated Water Bottle 32oz - Leak Proof, BPA Free, Keeps Cold 24H', price:24.99, currency:'USD', sales:9870, rating:4.5, reviews:2890, rank:2, image:'🧴', category:'家居厨房', weight:'中等', asin:'B0XXXXXXX2', trend:[25,26,24,25,27,28,26,25,24,25,26,24], badge:'hot' },
+  { id:3, platform:'amazon', list:'hot', title:'Posture Corrector for Men and Women - Adjustable Back Brace Support, Breathable', price:19.99, currency:'USD', sales:8540, rating:4.3, reviews:2100, rank:3, image:'🏋️', category:'运动户外', weight:'轻小件', asin:'B0XXXXXXX3', trend:[20,19,18,20,21,19,20,22,21,19,20,19], badge:'hot' },
+  { id:4, platform:'amazon', list:'hot', title:'LED Desk Lamp with USB Charging Port - 5 Color Modes, 10 Brightness Levels, Touch Control', price:35.99, currency:'USD', sales:7230, rating:4.6, reviews:1890, rank:4, image:'💡', category:'家居厨房', weight:'中等', asin:'B0XXXXXXX4', trend:[36,35,34,36,37,35,36,38,36,35,36,35], badge:'hot' },
+  { id:5, platform:'amazon', list:'hot', title:'Yoga Mat Non-Slip - 6mm Extra Thick, Eco-Friendly TPE, Carrying Strap Included', price:28.99, currency:'USD', sales:6890, rating:4.4, reviews:1560, rank:5, image:'🧘', category:'运动户外', weight:'中等', asin:'B0XXXXXXX5', trend:[29,28,27,29,30,28,29,31,29,28,29,28], badge:'hot' },
+  { id:6, platform:'amazon', list:'rising', title:'Mini Portable Projector 4K Support - Auto Keystone, WiFi 6, 200" Display', price:89.99, currency:'USD', sales:4520, rating:4.2, reviews:780, rank:12, image:'📽️', category:'电子产品', weight:'中等', asin:'B0XXXXXXX6', trend:[89,85,80,75,70,65,60,55,50,45,40,35], badge:'rising' },
+  { id:7, platform:'amazon', list:'rising', title:'Smart Pet Feeder with Camera - App Control, Voice Recording, 6L Capacity', price:59.99, currency:'USD', sales:3210, rating:4.5, reviews:620, rank:18, image:'🐾', category:'宠物用品', weight:'中等', asin:'B0XXXXXXX7', trend:[70,68,65,60,58,55,50,48,45,42,40,38], badge:'rising' },
+  { id:8, platform:'amazon', list:'new', title:'Magnetic Wireless Power Bank 10000mAh - 20W Fast Charging, Ultra Slim Design', price:39.99, currency:'USD', sales:2100, rating:4.8, reviews:320, rank:25, image:'🔋', category:'电子产品', weight:'轻小件', asin:'B0XXXXXXX8', trend:[40,39,38,40,41,39,40,42,40,39,40,39], badge:'new' },
+  { id:9, platform:'temu', list:'hot', title:'Silicone Kitchen Utensil Set 12-Piece - Heat Resistant, Non-Stick Safe, Colorful', price:12.99, currency:'USD', sales:25600, rating:4.6, reviews:8900, rank:1, image:'🍳', category:'家居厨房', weight:'轻小件', asin:'', trend:[13,12,11,13,14,12,13,15,13,12,13,12], badge:'hot' },
+  { id:10, platform:'temu', list:'hot', title:'Car Phone Mount Universal - 360° Rotation, Strong Suction Cup, Dashboard & Windshield', price:6.99, currency:'USD', sales:19800, rating:4.4, reviews:6700, rank:2, image:'📱', category:'电子产品', weight:'轻小件', asin:'', trend:[7,6.5,6,7,7.5,6.5,7,8,7,6.5,7,6], badge:'hot' },
+  { id:11, platform:'shopee', list:'hot', title:'Korean Style Women Canvas Tote Bag - Large Capacity, Minimalist Design, Multi-Color', price:8.50, currency:'USD', sales:15800, rating:4.7, reviews:4500, rank:1, image:'👜', category:'服装配饰', weight:'轻小件', asin:'', trend:[8.5,8,7.5,8.5,9,8,8.5,9.5,8.5,8,8.5,8], badge:'hot' },
+  { id:12, platform:'tiktok', list:'hot', title:'Viral LED Strip Lights 50ft - Music Sync, App Control, RGB 16 Million Colors', price:15.99, currency:'USD', sales:34500, rating:4.3, reviews:12300, rank:1, image:'💡', category:'家居厨房', weight:'轻小件', asin:'', trend:[16,15,14,16,17,15,16,18,16,15,16,15], badge:'hot' },
+];
+
+const sourceData = [
+  { id:1, title:'蓝牙耳机源头工厂 TWS降噪耳机跨境专供', price:18.50, priceRange:'¥16.80-22.00', moq:10, supplier:'深圳华强电子科技', location:'深圳', dropShipping:true, custom:true, badge:'实力商家', sales:8500, image:'🏭' },
+  { id:2, title:'跨境热销无线蓝牙耳机 OEM/ODM定制 logo印刷', price:15.80, priceRange:'¥14.50-19.90', moq:50, supplier:'东莞鸿达数码科技', location:'东莞', dropShipping:false, custom:true, badge:'深度验厂', sales:6200, image:'🏭' },
+  { id:3, title:'不锈钢保温杯 32oz大容量 跨境爆款现货批发', price:22.00, priceRange:'¥20.00-28.00', moq:5, supplier:'永康不锈钢制品有限公司', location:'永康', dropShipping:true, custom:true, badge:'实力商家', sales:12000, image:'🏭' },
+  { id:4, title:'瑜伽垫TPE环保防滑跨境专供 可定制颜色厚度', price:35.00, priceRange:'¥32.00-45.00', moq:20, supplier:'广州恒达体育用品', location:'广州', dropShipping:false, custom:true, badge:'', sales:3400, image:'🏭' },
+  { id:5, title:'LED触控台灯 USB充电护眼灯 学生办公跨境爆款', price:28.00, priceRange:'¥25.00-35.00', moq:10, supplier:'中山古镇灯饰源头厂', location:'中山', dropShipping:true, custom:true, badge:'实力商家', sales:7200, image:'🏭' },
+  { id:6, title:'智能宠物喂食器APP控制 6L大容量跨境定制', price:85.00, priceRange:'¥78.00-98.00', moq:5, supplier:'宁波宠乐科技', location:'宁波', dropShipping:true, custom:true, badge:'深度验厂', sales:2800, image:'🏭' },
+];
+
+// ============ Render Functions ============
+function renderDashboardRank() {
+  const tbody = document.getElementById('dashboardRankTable');
+  const filtered = products.filter(p => p.platform === state.currentPlatform && p.list === 'hot').slice(0, 8);
+  tbody.innerHTML = `<thead><tr><th>#</th><th>商品信息</th><th>售价</th><th>月销量</th><th>评分</th><th>操作</th></tr></thead><tbody>` +
+    filtered.map((p,i) => `
+      <tr onclick="openProductDetail(${p.id})">
+        <td><span class="rank-num ${i<3?'top3':''}">${p.rank}</span></td>
+        <td><div style="display:flex;align-items:center;gap:10px"><span style="font-size:28px">${p.image}</span><div><div style="font-weight:500;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.title}</div><div style="font-size:11px;color:var(--text-muted)">${p.category} · ${p.weight}</div></div></div></td>
+        <td><strong style="color:var(--danger)">$${p.price}</strong></td>
+        <td>${p.sales.toLocaleString()}</td>
+        <td><span class="tag green">${p.rating} <i class="fas fa-star" style="font-size:9px"></i></span></td>
+        <td><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openProductDetail(${p.id})">详情</button></td>
+      </tr>
+    `).join('') + '</tbody>';
+}
+
+function renderProducts() {
+  const grid = document.getElementById('productGrid');
+  let filtered = products.filter(p => p.platform === state.currentPlatform && p.list === state.currentListType);
+  const cat = document.getElementById('filterCategory').value;
+  if (cat) filtered = filtered.filter(p => p.category === cat);
+  const pmin = document.getElementById('filterPriceMin').value;
+  const pmax = document.getElementById('filterPriceMax').value;
+  if (pmin) filtered = filtered.filter(p => p.price >= parseFloat(pmin));
+  if (pmax) filtered = filtered.filter(p => p.price <= parseFloat(pmax));
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><i class="fas fa-search"></i><p>没有找到匹配的商品</p></div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(p => `
+    <div class="product-card" onclick="openProductDetail(${p.id})">
+      ${p.badge === 'hot' ? '<span class="product-badge badge-hot">热销</span>' : p.badge === 'rising' ? '<span class="product-badge badge-rising">飙升</span>' : '<span class="product-badge badge-new">新品</span>'}
+      <div class="product-img">${p.image}</div>
+      <div class="product-info">
+        <div class="product-title">${p.title}</div>
+        <div class="product-meta">
+          <span class="product-price">$${p.price} <span class="product-currency">USD</span></span>
+          <span class="tag">${p.category}</span>
+        </div>
+        <div class="product-stats">
+          <span><i class="fas fa-chart-bar"></i> ${p.sales.toLocaleString()} 件</span>
+          <span><i class="fas fa-star" style="color:#f59e0b"></i> ${p.rating}</span>
+          <span><i class="fas fa-comment"></i> ${p.reviews.toLocaleString()}</span>
+        </div>
+      </div>
+      <div class="product-footer">
+        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();toggleFav(${p.id},'product')"><i class="far fa-star"></i> 收藏</button>
+        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();goToMatching(${p.id})"><i class="fas fa-link"></i> 搜货源</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderSourceList() {
+  const list = document.getElementById('sourceList');
+  list.innerHTML = sourceData.map(s => `
+    <div class="source-item">
+      <div class="source-img">${s.image}</div>
+      <div class="source-info">
+        <div class="source-title">${s.title}</div>
+        <div class="source-meta">
+          <span>起订量: ${s.moq}件</span><span>商家: ${s.supplier}</span><span>发货地: ${s.location}</span>
+          ${s.badge ? `<span class="tag green">${s.badge}</span>` : ''}
+          ${s.dropShipping ? '<span class="tag blue">一件代发</span>' : ''}
+          ${s.custom ? '<span class="tag blue">支持定制</span>' : ''}
+        </div>
+      </div>
+      <div class="source-price">${s.priceRange}</div>
+      <div class="source-actions">
+        <button class="btn btn-primary btn-sm" onclick="goToCalc(${s.id})"><i class="fas fa-calculator"></i> 测算利润</button>
+        <button class="btn btn-outline btn-sm" onclick="toggleFav(${s.id},'source')"><i class="far fa-star"></i> 收藏</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openProductDetail(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  const modal = document.getElementById('productModal');
+  const inner = document.getElementById('productModalInner');
+  inner.innerHTML = `
+    <div class="modal-header">
+      <h2>${p.image} ${p.title.substring(0, 50)}...</h2>
+      <button class="modal-close" onclick="closeProductModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;gap:24px;flex-wrap:wrap">
+        <div style="flex:1;min-width:260px">
+          <div style="font-size:80px;text-align:center;padding:40px;background:var(--surface-alt);border-radius:var(--radius-lg);margin-bottom:16px">${p.image}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <span class="tag green">${p.category}</span><span class="tag">${p.weight}</span>
+            ${p.badge === 'hot' ? '<span class="tag" style="background:var(--danger-light);color:var(--danger)">热销榜 #'+p.rank+'</span>' : ''}
+            ${p.badge === 'rising' ? '<span class="tag" style="background:var(--warning-light);color:var(--warning)">飙升榜</span>' : ''}
+          </div>
+        </div>
+        <div style="flex:1;min-width:260px">
+          <h3 style="margin-bottom:12px">${p.title}</h3>
+          <div style="font-size:32px;font-weight:700;color:var(--danger);margin-bottom:8px">$${p.price} <span style="font-size:14px;color:var(--text-muted);font-weight:400">USD</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;font-size:13px">
+            <div><span style="color:var(--text-muted)">月销量:</span> <strong>${p.sales.toLocaleString()}</strong></div>
+            <div><span style="color:var(--text-muted)">评分:</span> <strong>${p.rating} / 5.0</strong></div>
+            <div><span style="color:var(--text-muted)">评论数:</span> <strong>${p.reviews.toLocaleString()}</strong></div>
+            <div><span style="color:var(--text-muted)">类目排名:</span> <strong>#${p.rank}</strong></div>
+            <div><span style="color:var(--text-muted)">ASIN:</span> <strong>${p.asin || 'N/A'}</strong></div>
+            <div><span style="color:var(--text-muted)">平台:</span> <strong>${platforms[p.platform]?.name || p.platform}</strong></div>
+          </div>
+          <div class="chart-container"><canvas id="priceChart"></canvas></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+        <button class="btn btn-primary btn-lg" onclick="closeProductModal();goToMatching(${p.id})"><i class="fas fa-link"></i> 一键匹配1688货源</button>
+        <button class="btn btn-outline btn-lg" onclick="toggleFav(${p.id},'product')"><i class="far fa-star"></i> 收藏商品</button>
+      </div>
+    </div>`;
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  // Render chart
+  setTimeout(() => {
+    const canvas = document.getElementById('priceChart');
+    if (!canvas) return;
+    new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: ['D-89','D-82','D-75','D-68','D-61','D-54','D-47','D-40','D-33','D-26','D-19','D-12','D-5','今日'],
+        datasets: [{
+          label: '价格走势 (USD)',
+          data: [...p.trend, p.price],
+          borderColor: '#4f6ef7',
+          backgroundColor: 'rgba(79,110,247,.08)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 2,
+          pointHoverRadius: 6,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: false, grid: { color: '#f1f5f9' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  }, 100);
+}
+
+function closeProductModal() {
+  document.getElementById('productModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+// ============ Navigation ============
+function navigateTo(page) {
+  state.currentPage = page;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + page);
+  if (target) target.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelector(`.nav-item[data-page="${page}"]`)?.classList.add('active');
+
+  if (page === 'dashboard') renderDashboardRank();
+  if (page === 'products') renderProducts();
+  if (page === 'matching') renderSourceList();
+  if (page === 'calculator') calculateProfit();
+  if (page === 'profile') renderProfile();
+  if (page === 'favorites') renderFavorites();
+}
+
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => navigateTo(item.dataset.page));
+});
+
+function switchDashboardTab(platform) {
+  state.currentPlatform = platform;
+  document.querySelectorAll('#dashboardTabs .platform-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`#dashboardTabs .platform-tab[data-platform="${platform}"]`)?.classList.add('active');
+  renderDashboardRank();
+}
+
+function switchPlatform(platform) {
+  state.currentPlatform = platform;
+  document.querySelectorAll('#productPlatformTabs .platform-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`#productPlatformTabs .platform-tab[data-platform="${platform}"]`)?.classList.add('active');
+  renderProducts();
+}
+
+function switchListType(type) {
+  state.currentListType = type;
+  document.querySelectorAll('#page-products .tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`#page-products .tab[data-list="${type}"]`)?.classList.add('active');
+  renderProducts();
+}
+
+function applyFilters() { renderProducts(); }
+function resetFilters() {
+  document.getElementById('filterCategory').value = '';
+  document.getElementById('filterPriceMin').value = '';
+  document.getElementById('filterPriceMax').value = '';
+  document.getElementById('filterRating').value = '';
+  document.getElementById('filterSales').value = '';
+  renderProducts();
+}
+
+// ============ Matching ============
+function searchSource() {
+  renderSourceList();
+  if (state.userType === 'guest') updateSearchCount();
+}
+
+function searchSourceByImage() {
+  alert('图片搜同款功能：请上传海外商品图片，系统将通过1680拍立淘接口以图搜货。\n(演示模式下使用示例数据)');
+  renderSourceList();
+}
+
+function goToMatching(productId) {
+  const p = products.find(x => x.id === productId);
+  if (p) document.getElementById('matchKeyword').value = p.title.substring(0, 60);
+  navigateTo('matching');
+  renderSourceList();
+}
+
+// ============ Calculator ============
+function calculateProfit() {
+  const price = parseFloat(document.getElementById('calcPrice').value) || 0;
+  const rate = parseFloat(document.getElementById('calcRate').value) || 7.25;
+  const cost = parseFloat(document.getElementById('calcCost').value) || 0;
+  const logistics = parseFloat(document.getElementById('calcLogistics').value) || 0;
+  const commission = parseFloat(document.getElementById('calcCommission').value) || 0;
+  const packaging = parseFloat(document.getElementById('calcPackaging').value) || 0;
+  const tariff = parseFloat(document.getElementById('calcTariff').value) || 0;
+
+  const revenue = price * rate;
+  const commissionAmount = revenue * (commission / 100);
+  const totalCost = cost + logistics + commissionAmount + packaging + tariff;
+  const profit = revenue - totalCost;
+  const grossMargin = ((revenue - cost) / revenue * 100);
+  const netMargin = (profit / revenue * 100);
+
+  document.getElementById('calcRevenue').textContent = `¥${revenue.toFixed(2)}`;
+  document.getElementById('profitValue').textContent = `¥${profit.toFixed(2)}`;
+  document.getElementById('profitMargin').textContent = `${grossMargin.toFixed(1)}%`;
+  document.getElementById('netMargin').textContent = `${netMargin.toFixed(1)}%`;
+  document.getElementById('totalCost').textContent = `¥${totalCost.toFixed(2)}`;
+
+  const badge = document.getElementById('profitBadge');
+  if (netMargin > 20) { badge.textContent = '高盈利'; badge.className = 'profit-badge profit-high'; }
+  else if (netMargin > 5) { badge.textContent = '适中'; badge.className = 'profit-badge profit-mid'; }
+  else if (netMargin > 0) { badge.textContent = '微利'; badge.className = 'profit-badge profit-low'; }
+  else { badge.textContent = '亏损'; badge.className = 'profit-badge profit-low'; }
+}
+
+function goToCalc(sourceId) {
+  navigateTo('calculator');
+  const s = sourceData.find(x => x.id === sourceId);
+  if (s) document.getElementById('calcCost').value = parseFloat(s.price);
+  calculateProfit();
+}
+
+// ============ Favorites ============
+function toggleFav(id, type) {
+  const list = state.favorites[type + 's'];
+  const idx = list.indexOf(id);
+  if (idx > -1) { list.splice(idx, 1); } else { list.push(id); }
+  if (state.currentPage === 'favorites') renderFavorites();
+}
+
+function renderFavorites() {
+  const container = document.getElementById('favContent');
+  const ids = state.favorites.products;
+  if (ids.length === 0) {
+    container.innerHTML = '<div class="empty-state"><i class="fas fa-star"></i><p>暂无收藏，快去选品页面收藏商品吧</p></div>';
+    return;
+  }
+  const items = products.filter(p => ids.includes(p.id));
+  container.innerHTML = '<div class="product-grid">' + items.map(p => `
+    <div class="product-card" onclick="openProductDetail(${p.id})">
+      <div class="product-img">${p.image}</div>
+      <div class="product-info">
+        <div class="product-title">${p.title}</div>
+        <div class="product-meta"><span class="product-price">$${p.price}</span><span class="tag">${p.category}</span></div>
+      </div>
+      <div class="product-footer">
+        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();toggleFav(${p.id},'product')">取消收藏</button>
+        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();goToMatching(${p.id})">搜货源</button>
+      </div>
+    </div>
+  `).join('') + '</div>';
+}
+
+function switchFavTab(tab) {
+  document.querySelectorAll('#page-favorites .tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`#page-favorites .tab[onclick="switchFavTab('${tab}')"]`)?.classList.add('active');
+  if (tab === 'product') renderFavorites();
+  else if (tab === 'source') {
+    const container = document.getElementById('favContent');
+    const ids = state.favorites.sources;
+    if (ids.length === 0) {
+      container.innerHTML = '<div class="empty-state"><i class="fas fa-star"></i><p>暂无收藏的货源</p></div>';
+      return;
+    }
+    const items = sourceData.filter(s => ids.includes(s.id));
+    container.innerHTML = '<div class="source-list">' + items.map(s => `
+      <div class="source-item">
+        <div class="source-img">${s.image}</div>
+        <div class="source-info"><div class="source-title">${s.title}</div><div class="source-meta"><span>${s.supplier}</span><span>${s.location}</span></div></div>
+        <div class="source-price">${s.priceRange}</div>
+        <button class="btn btn-outline btn-sm" onclick="toggleFav(${s.id},'source')">取消收藏</button>
+      </div>
+    `).join('') + '</div>';
+  } else {
+    document.getElementById('favContent').innerHTML = '<div class="empty-state"><i class="fas fa-folder"></i><p>选品文件夹功能即将上线</p></div>';
+  }
+}
+
+// ============ Profile ============
+function renderProfile() {
+  switchProfileTab('info');
+}
+
+function switchProfileTab(tab) {
+  document.querySelectorAll('#page-profile .user-menu-item').forEach(i => i.classList.remove('active'));
+  document.querySelector(`#page-profile .user-menu-item[onclick="switchProfileTab('${tab}')"]`)?.classList.add('active');
+  const panel = document.getElementById('profilePanel');
+
+  if (tab === 'info') {
+    panel.innerHTML = `
+      <div class="profile-header">
+        <div class="profile-avatar" id="profileAvatar">U</div>
+        <div>
+          <h3 style="margin-bottom:4px">${state.userType === 'guest' ? '游客用户' : state.userType === 'registered' ? '注册用户' : '会员用户'}</h3>
+          <p style="color:var(--text-secondary);font-size:13px">账户类型: ${state.userType === 'guest' ? '游客 (每日5次搜索)' : state.userType === 'registered' ? '免费注册 (每日20次搜索)' : '付费会员 (无限次搜索)'}</p>
+          <p style="color:var(--text-muted);font-size:12px">注册时间: --</p>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header"><h3>登录 / 注册</h3></div>
+        <div class="card-body">
+          <div class="form-group"><label>手机号</label><input type="text" placeholder="请输入手机号" id="loginPhone"></div>
+          <div class="form-group"><label>验证码</label><div style="display:flex;gap:8px"><input type="text" placeholder="验证码" style="flex:1" id="loginCode"><button class="btn btn-outline btn-sm" style="flex-shrink:0">获取验证码</button></div></div>
+          <button class="btn btn-primary" style="width:100%" onclick="doLogin()">登录 / 注册</button>
+        </div>
+      </div>`;
+  } else if (tab === 'plan') {
+    panel.innerHTML = `
+      <h3 style="margin-bottom:20px">会员套餐</h3>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+        <div class="plan-card ${state.userType==='guest'?'current':''}">
+          <div class="plan-name">游客</div>
+          <div class="plan-price">免费</div>
+          <ul class="plan-features">
+            <li><i class="fas fa-check"></i> 每日5次搜索</li>
+            <li><i class="fas fa-check"></i> 基础榜单查看</li>
+            <li><i class="fas fa-times" style="color:var(--text-muted)"></i> 货源匹配</li>
+            <li><i class="fas fa-times" style="color:var(--text-muted)"></i> 利润测算</li>
+          </ul>
+          <button class="btn btn-outline btn-sm" style="width:100%">当前方案</button>
+        </div>
+        <div class="plan-card ${state.userType==='registered'?'current':''}">
+          <div class="plan-name">免费注册</div>
+          <div class="plan-price">免费</div>
+          <ul class="plan-features">
+            <li><i class="fas fa-check"></i> 每日20次搜索</li>
+            <li><i class="fas fa-check"></i> 全部榜单查看</li>
+            <li><i class="fas fa-check"></i> 基础货源匹配</li>
+            <li><i class="fas fa-check"></i> 利润测算</li>
+          </ul>
+          <button class="btn btn-primary btn-sm" style="width:100%" onclick="doLogin()">免费注册</button>
+        </div>
+        <div class="plan-card ${state.userType==='member'?'current':''}">
+          <div class="plan-name">高级会员</div>
+          <div class="plan-price">¥199<span>/月</span></div>
+          <ul class="plan-features">
+            <li><i class="fas fa-check"></i> 无限次搜索</li>
+            <li><i class="fas fa-check"></i> 全部功能解锁</li>
+            <li><i class="fas fa-check"></i> 批量导出</li>
+            <li><i class="fas fa-check"></i> AI分析 & 数据监控</li>
+          </ul>
+          <button class="btn btn-accent btn-sm" style="width:100%">立即升级</button>
+        </div>
+      </div>`;
+  } else if (tab === 'history') {
+    panel.innerHTML = `
+      <h3 style="margin-bottom:16px">历史搜索记录</h3>
+      ${state.history.length === 0 ? '<div class="empty-state"><i class="fas fa-clock"></i><p>暂无搜索记录</p></div>' :
+        '<div class="source-list">' + state.history.map((h,i) => `
+          <div class="source-item" style="justify-content:space-between">
+            <div><strong>${h}</strong></div>
+            <span style="font-size:12px;color:var(--text-muted)">${new Date(Date.now() - i*3600000).toLocaleString('zh-CN')}</span>
+          </div>`).join('') + '</div>'
+      }`;
+  }
+}
+
+function doLogin() {
+  state.userType = 'registered';
+  state.searchCount = 20;
+  document.getElementById('userName').textContent = '注册用户';
+  document.getElementById('userRole').textContent = '今日剩余 20 次搜索';
+  document.getElementById('userAvatar').textContent = 'R';
+  document.getElementById('searchCount').textContent = '剩余搜索: 20次';
+  navigateTo('dashboard');
+  renderDashboardRank();
+}
+
+// ============ Search ============
+function globalSearchHandler() {
+  const q = document.getElementById('globalSearch').value.trim();
+  if (!q) return;
+  if (state.userType === 'guest' && state.searchCount <= 0) {
+    alert('游客每日搜索次数已用完 (5次)，请注册或升级会员。');
+    return;
+  }
+  state.history.unshift(q);
+  if (state.history.length > 20) state.history.length = 20;
+  updateSearchCount();
+  navigateTo('products');
+  document.getElementById('filterCategory').value = '';
+  document.getElementById('filterPriceMin').value = '';
+  document.getElementById('filterPriceMax').value = '';
+  // Filter products by keyword in title
+  const grid = document.getElementById('productGrid');
+  const keyword = q.toLowerCase();
+  const filtered = products.filter(p => p.title.toLowerCase().includes(keyword));
+  grid.innerHTML = filtered.length === 0
+    ? '<div class="empty-state" style="grid-column:1/-1"><i class="fas fa-search"></i><p>未找到匹配的商品，换个关键词试试</p></div>'
+    : filtered.map(p => `
+      <div class="product-card" onclick="openProductDetail(${p.id})">
+        <div class="product-img">${p.image}</div>
+        <div class="product-info">
+          <div class="product-title">${p.title}</div>
+          <div class="product-meta"><span class="product-price">$${p.price}</span><span class="tag">${platforms[p.platform]?.name || p.platform}</span></div>
+        </div>
+        <div class="product-footer">
+          <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();toggleFav(${p.id},'product')"><i class="far fa-star"></i> 收藏</button>
+          <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();goToMatching(${p.id})"><i class="fas fa-link"></i> 搜货源</button>
+        </div>
+      </div>
+    `).join('');
+}
+
+function updateSearchCount() {
+  if (state.userType === 'guest' && state.searchCount > 0) {
+    state.searchCount--;
+    document.getElementById('searchCount').textContent = `剩余搜索: ${state.searchCount}次`;
+  }
+}
+
+// ============ Sidebar ============
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ============ Init ============
+document.addEventListener('DOMContentLoaded', () => {
+  renderDashboardRank();
+  renderProducts();
+  renderSourceList();
+  calculateProfit();
+
+  // Live calculator
+  ['calcPrice','calcRate','calcCost','calcLogistics','calcCommission','calcPackaging','calcTariff'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', calculateProfit);
+  });
+});
+
+// Close sidebar on outside click (mobile)
+document.addEventListener('click', (e) => {
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && !e.target.closest('.mobile-menu-btn')) {
+    sidebar.classList.remove('open');
+  }
+});
+</script>
+</body>
+</html>
