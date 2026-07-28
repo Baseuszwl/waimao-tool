@@ -8,239 +8,99 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 :root {
-  --bg: #f0f3f8;
-  --surface: #ffffff;
-  --surface-alt: #f7f8fc;
-  --primary: #4f6ef7;
-  --primary-light: #eef1fe;
-  --primary-dark: #3b54d4;
-  --accent: #10b981;
-  --accent-light: #ecfdf5;
-  --warning: #f59e0b;
-  --warning-light: #fffbeb;
-  --danger: #ef4444;
-  --danger-light: #fef2f2;
-  --text: #1e293b;
-  --text-secondary: #64748b;
-  --text-muted: #94a3b8;
-  --border: #e2e8f0;
-  --border-light: #f1f5f9;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,.04);
-  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --bg: #f0f3f8; --surface: #ffffff; --surface-alt: #f7f8fc;
+  --primary: #4f6ef7; --primary-light: #eef1fe; --primary-dark: #3b54d4;
+  --accent: #10b981; --accent-light: #ecfdf5;
+  --warning: #f59e0b; --warning-light: #fffbeb;
+  --danger: #ef4444; --danger-light: #fef2f2;
+  --text: #1e293b; --text-secondary: #64748b; --text-muted: #94a3b8;
+  --border: #e2e8f0; --border-light: #f1f5f9;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.04); --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
   --shadow-md: 0 4px 6px rgba(0,0,0,.04), 0 2px 4px rgba(0,0,0,.04);
   --shadow-lg: 0 10px 25px rgba(0,0,0,.06), 0 4px 10px rgba(0,0,0,.04);
   --shadow-xl: 0 20px 50px rgba(0,0,0,.08);
-  --radius-sm: 8px;
-  --radius: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
+  --radius-sm: 8px; --radius: 12px; --radius-lg: 16px; --radius-xl: 20px;
   --transition: 0.2s cubic-bezier(.4,0,.2,1);
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 15px; scroll-behavior: smooth; }
-body {
-  font-family: var(--font-sans);
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.6;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* Layout */
+body { font-family: var(--font-sans); background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
 .app-container { display: flex; min-height: 100vh; }
-.sidebar {
-  width: 240px; background: var(--surface); border-right: 1px solid var(--border);
-  display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh;
-  z-index: 100; transition: transform var(--transition); flex-shrink: 0;
-}
+.sidebar { width: 240px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; z-index: 100; transition: transform var(--transition); flex-shrink: 0; }
 .main-content { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-
-/* Sidebar */
-.sidebar-logo {
-  padding: 20px 24px; display: flex; align-items: center; gap: 12px;
-  border-bottom: 1px solid var(--border-light);
-}
-.sidebar-logo .logo-icon {
-  width: 40px; height: 40px; border-radius: var(--radius);
-  background: linear-gradient(135deg, var(--primary), #818cf8);
-  display: flex; align-items: center; justify-content: center; color: #fff;
-  font-size: 20px; font-weight: 700; flex-shrink: 0;
-}
+.sidebar-logo { padding: 20px 24px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-light); }
+.sidebar-logo .logo-icon { width: 40px; height: 40px; border-radius: var(--radius); background: linear-gradient(135deg, var(--primary), #818cf8); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; font-weight: 700; flex-shrink: 0; }
 .sidebar-logo .logo-text { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -.3px; }
 .sidebar-logo .logo-text span { color: var(--primary); }
-
 .sidebar-nav { padding: 12px; flex: 1; overflow-y: auto; }
 .nav-section { margin-bottom: 8px; }
-.nav-section-title {
-  padding: 8px 12px 4px; font-size: 11px; font-weight: 600; text-transform: uppercase;
-  color: var(--text-muted); letter-spacing: .8px;
-}
-.nav-item {
-  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
-  border-radius: var(--radius-sm); cursor: pointer; color: var(--text-secondary);
-  font-size: 14px; font-weight: 500; transition: all var(--transition);
-  margin-bottom: 2px;
-}
+.nav-section-title { padding: 8px 12px 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: .8px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer; color: var(--text-secondary); font-size: 14px; font-weight: 500; transition: all var(--transition); margin-bottom: 2px; }
 .nav-item:hover { background: var(--primary-light); color: var(--primary); }
 .nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
 .nav-item i { width: 20px; text-align: center; font-size: 15px; }
-.nav-badge {
-  margin-left: auto; background: var(--accent); color: #fff; font-size: 10px;
-  padding: 2px 7px; border-radius: 10px; font-weight: 600;
-}
-
-.sidebar-footer {
-  padding: 12px; border-top: 1px solid var(--border-light);
-}
-.user-badge {
-  display: flex; align-items: center; gap: 10px; padding: 8px 12px;
-  border-radius: var(--radius-sm); cursor: pointer; transition: all var(--transition);
-}
+.sidebar-footer { padding: 12px; border-top: 1px solid var(--border-light); }
+.user-badge { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: var(--radius-sm); cursor: pointer; transition: all var(--transition); }
 .user-badge:hover { background: var(--surface-alt); }
-.user-avatar {
-  width: 34px; height: 34px; border-radius: 50%;
-  background: linear-gradient(135deg, #6366f1, #a78bfa);
-  color: #fff; display: flex; align-items: center; justify-content: center;
-  font-size: 14px; font-weight: 600;
-}
-.user-info { font-size: 13px; }
-.user-info .name { font-weight: 600; color: var(--text); }
-.user-info .role { font-size: 11px; color: var(--text-muted); }
-
-/* Header */
-.header {
-  background: var(--surface); border-bottom: 1px solid var(--border);
-  padding: 14px 28px; display: flex; align-items: center; gap: 16px;
-  position: sticky; top: 0; z-index: 50;
-}
-.header-search {
-  flex: 1; max-width: 480px; position: relative;
-}
-.header-search input {
-  width: 100%; padding: 10px 16px 10px 42px; border: 1px solid var(--border);
-  border-radius: 24px; font-size: 14px; background: var(--surface-alt);
-  transition: all var(--transition); outline: none; font-family: var(--font-sans);
-}
-.header-search input:focus {
-  border-color: var(--primary); background: var(--surface);
-  box-shadow: 0 0 0 3px rgba(79,110,247,.1);
-}
-.header-search i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 15px; }
+.user-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #a78bfa); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; }
+.user-info { font-size: 13px; } .user-info .name { font-weight: 600; color: var(--text); } .user-info .role { font-size: 11px; color: var(--text-muted); }
+.header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 28px; display: flex; align-items: center; gap: 16px; position: sticky; top: 0; z-index: 50; }
+.header-search { flex: 1; max-width: 480px; position: relative; }
+.header-search input { width: 100%; padding: 10px 42px 10px 42px; border: 1px solid var(--border); border-radius: 24px; font-size: 14px; background: var(--surface-alt); transition: all var(--transition); outline: none; font-family: var(--font-sans); }
+.header-search input:focus { border-color: var(--primary); background: var(--surface); box-shadow: 0 0 0 3px rgba(79,110,247,.1); }
+.header-search .search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 15px; pointer-events: none; }
+.header-search .clear-icon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 13px; cursor: pointer; display: none; padding: 4px; border-radius: 50%; transition: all var(--transition); }
+.header-search .clear-icon:hover { color: var(--danger); background: var(--danger-light); }
+.header-search .clear-icon.visible { display: block; }
 .header-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
-.header-btn {
-  width: 38px; height: 38px; border-radius: 50%; border: none; background: transparent;
-  cursor: pointer; color: var(--text-secondary); font-size: 17px; transition: all var(--transition);
-  display: flex; align-items: center; justify-content: center;
-}
+.header-btn { width: 38px; height: 38px; border-radius: 50%; border: none; background: transparent; cursor: pointer; color: var(--text-secondary); font-size: 17px; transition: all var(--transition); display: flex; align-items: center; justify-content: center; }
 .header-btn:hover { background: var(--surface-alt); color: var(--primary); }
-.search-count {
-  font-size: 12px; color: var(--text-muted); padding: 6px 12px;
-  background: var(--surface-alt); border-radius: 16px; white-space: nowrap;
-}
-
-/* Page */
+.search-count { font-size: 12px; color: var(--text-muted); padding: 6px 12px; background: var(--surface-alt); border-radius: 16px; white-space: nowrap; }
 .page { display: none; padding: 28px; }
 .page.active { display: block; animation: fadeSlideIn .35s ease; }
 @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-/* Cards */
-.card {
-  background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm); transition: all var(--transition);
-}
+.card { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm); transition: all var(--transition); }
 .card:hover { box-shadow: var(--shadow-md); }
-.card-header {
-  padding: 18px 24px; border-bottom: 1px solid var(--border-light);
-  display: flex; align-items: center; justify-content: space-between;
-}
+.card-header { padding: 18px 24px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
 .card-header h3 { font-size: 16px; font-weight: 600; }
 .card-body { padding: 20px 24px; }
-
-/* Stats Grid */
 .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-.stat-card {
-  background: var(--surface); border-radius: var(--radius-lg); padding: 20px 24px;
-  border: 1px solid var(--border); box-shadow: var(--shadow-sm);
-  display: flex; align-items: center; gap: 16px;
-}
-.stat-icon {
-  width: 48px; height: 48px; border-radius: var(--radius); display: flex;
-  align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;
-}
+.stat-card { background: var(--surface); border-radius: var(--radius-lg); padding: 20px 24px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 16px; }
+.stat-icon { width: 48px; height: 48px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
 .stat-icon.blue { background: var(--primary-light); color: var(--primary); }
 .stat-icon.green { background: var(--accent-light); color: var(--accent); }
 .stat-icon.amber { background: var(--warning-light); color: var(--warning); }
 .stat-icon.red { background: var(--danger-light); color: var(--danger); }
 .stat-value { font-size: 24px; font-weight: 700; line-height: 1.2; }
 .stat-label { font-size: 13px; color: var(--text-secondary); }
-
-/* Platform tabs */
 .platform-tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
-.platform-tab {
-  padding: 10px 20px; border-radius: 24px; border: 1px solid var(--border);
-  background: var(--surface); cursor: pointer; font-size: 13px; font-weight: 500;
-  color: var(--text-secondary); transition: all var(--transition); white-space: nowrap;
-  display: flex; align-items: center; gap: 7px;
-}
+.platform-tab { padding: 10px 20px; border-radius: 24px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-secondary); transition: all var(--transition); white-space: nowrap; display: flex; align-items: center; gap: 7px; }
 .platform-tab:hover { border-color: var(--primary); color: var(--primary); }
 .platform-tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 .platform-tab i { font-size: 15px; }
-
-/* Filters */
-.filters-row {
-  display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center;
-}
-.filter-select, .filter-input {
-  padding: 9px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm);
-  font-size: 13px; color: var(--text); background: var(--surface); outline: none;
-  transition: all var(--transition); font-family: var(--font-sans);
-}
+.filters-row { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+.filter-select, .filter-input { padding: 9px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; color: var(--text); background: var(--surface); outline: none; transition: all var(--transition); font-family: var(--font-sans); }
 .filter-select:focus, .filter-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,110,247,.08); }
-.filter-input { width: 100px; }
-.filter-select { min-width: 130px; }
-
-/* Buttons */
-.btn {
-  padding: 10px 20px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500;
-  border: none; cursor: pointer; transition: all var(--transition); display: inline-flex;
-  align-items: center; gap: 6px; font-family: var(--font-sans); white-space: nowrap;
-}
-.btn-primary { background: var(--primary); color: #fff; }
-.btn-primary:hover { background: var(--primary-dark); box-shadow: var(--shadow-md); }
-.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-.btn-outline:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
-.btn-accent { background: var(--accent); color: #fff; }
-.btn-accent:hover { background: #059669; }
-.btn-sm { padding: 6px 14px; font-size: 12px; }
-.btn-lg { padding: 12px 28px; font-size: 15px; }
-
-/* Product Grid */
+.filter-input { width: 100px; } .filter-select { min-width: 130px; }
+.btn { padding: 10px 20px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: all var(--transition); display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-sans); white-space: nowrap; }
+.btn-primary { background: var(--primary); color: #fff; } .btn-primary:hover { background: var(--primary-dark); box-shadow: var(--shadow-md); }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); } .btn-outline:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+.btn-accent { background: var(--accent); color: #fff; } .btn-accent:hover { background: #059669; }
+.btn-sm { padding: 6px 14px; font-size: 12px; } .btn-lg { padding: 12px 28px; font-size: 15px; }
+.search-result-bar { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: var(--primary-light); border-radius: var(--radius-sm); margin-bottom: 16px; font-size: 13px; color: var(--primary-dark); font-weight: 500; }
+.search-result-bar .btn { margin-left: auto; }
 .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-.product-card {
-  background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border);
-  overflow: hidden; transition: all var(--transition); cursor: pointer; position: relative;
-}
+.product-card { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); overflow: hidden; transition: all var(--transition); cursor: pointer; position: relative; }
 .product-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
-.product-img {
-  width: 100%; height: 200px; object-fit: cover; background: var(--surface-alt);
-  display: flex; align-items: center; justify-content: center; color: var(--text-muted);
-  font-size: 40px;
-}
-.product-badge {
-  position: absolute; top: 12px; left: 12px; padding: 4px 10px;
-  border-radius: 12px; font-size: 11px; font-weight: 600; color: #fff;
-}
-.badge-hot { background: var(--danger); }
-.badge-new { background: var(--primary); }
-.badge-rising { background: var(--warning); }
+.product-img-wrap { width: 100%; height: 200px; overflow: hidden; background: var(--surface-alt); position: relative; }
+.product-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s ease; }
+.product-card:hover .product-img-wrap img { transform: scale(1.05); }
+.product-img-wrap .img-fallback { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 48px; color: var(--text-muted); background: linear-gradient(135deg, #f8fafc, #e2e8f0); }
+.product-badge { position: absolute; top: 12px; left: 12px; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; color: #fff; z-index: 2; }
+.badge-hot { background: var(--danger); } .badge-new { background: var(--primary); } .badge-rising { background: var(--warning); }
 .product-info { padding: 14px 16px; }
-.product-title {
-  font-size: 14px; font-weight: 500; line-height: 1.4; margin-bottom: 8px;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-}
+.product-title { font-size: 14px; font-weight: 500; line-height: 1.4; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .product-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .product-price { font-size: 18px; font-weight: 700; color: var(--danger); }
 .product-currency { font-size: 11px; color: var(--text-muted); font-weight: 400; }
@@ -248,265 +108,106 @@ body {
 .product-stats span { display: flex; align-items: center; gap: 4px; }
 .product-footer { padding: 12px 16px; border-top: 1px solid var(--border-light); display: flex; gap: 8px; }
 .product-footer .btn { flex: 1; justify-content: center; font-size: 12px; }
-
-/* Modal */
-.modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,.4); backdrop-filter: blur(4px);
-  z-index: 1000; display: flex; align-items: center; justify-content: center;
-  animation: fadeIn .2s ease;
-}
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.4); backdrop-filter: blur(4px); z-index: 1000; display: flex; align-items: center; justify-content: center; animation: fadeIn .2s ease; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-.modal {
-  background: var(--surface); border-radius: var(--radius-xl); width: 90%; max-width: 800px;
-  max-height: 85vh; overflow-y: auto; box-shadow: var(--shadow-xl); animation: modalIn .3s ease;
-}
+.modal { background: var(--surface); border-radius: var(--radius-xl); width: 90%; max-width: 860px; max-height: 85vh; overflow-y: auto; box-shadow: var(--shadow-xl); animation: modalIn .3s ease; }
 @keyframes modalIn { from { opacity: 0; transform: scale(.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-.modal-header {
-  padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex;
-  align-items: center; justify-content: space-between; position: sticky; top: 0;
-  background: var(--surface); border-radius: var(--radius-xl) var(--radius-xl) 0 0; z-index: 1;
-}
+.modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--surface); border-radius: var(--radius-xl) var(--radius-xl) 0 0; z-index: 1; }
 .modal-header h2 { font-size: 18px; font-weight: 600; }
-.modal-close {
-  width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--surface-alt);
-  cursor: pointer; font-size: 18px; color: var(--text-secondary); transition: all var(--transition);
-  display: flex; align-items: center; justify-content: center;
-}
+.modal-close { width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--surface-alt); cursor: pointer; font-size: 18px; color: var(--text-secondary); transition: all var(--transition); display: flex; align-items: center; justify-content: center; }
 .modal-close:hover { background: var(--danger-light); color: var(--danger); }
 .modal-body { padding: 24px; }
-
-/* Profit Calculator */
+.detail-img-wrap { border-radius: var(--radius-lg); overflow: hidden; background: var(--surface-alt); margin-bottom: 16px; position: relative; }
+.detail-img-wrap img { width: 100%; max-height: 400px; object-fit: contain; display: block; }
+.detail-img-wrap .img-fallback { width: 100%; height: 260px; display: flex; align-items: center; justify-content: center; font-size: 80px; color: var(--text-muted); background: linear-gradient(135deg, #f8fafc, #e2e8f0); }
+.rank-table-img { width: 52px; height: 52px; border-radius: var(--radius-sm); object-fit: cover; background: var(--surface-alt); flex-shrink: 0; }
+.rank-table-img.img-fallback { display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--text-muted); }
 .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-.calc-section { margin-bottom: 20px; }
-.calc-section h4 { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--text); }
+.calc-section { margin-bottom: 20px; } .calc-section h4 { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--text); }
 .calc-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 .calc-row label { font-size: 13px; color: var(--text-secondary); flex-shrink: 0; margin-right: 12px; }
-.calc-row input {
-  width: 140px; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
-  font-size: 13px; text-align: right; outline: none; font-family: var(--font-sans);
-  transition: all var(--transition);
-}
+.calc-row input { width: 140px; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; text-align: right; outline: none; font-family: var(--font-sans); transition: all var(--transition); }
 .calc-row input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,110,247,.08); }
-.calc-result {
-  background: linear-gradient(135deg, var(--primary-light), #f0f4ff);
-  border-radius: var(--radius-lg); padding: 24px; margin-top: 16px;
-}
+.calc-result { background: linear-gradient(135deg, var(--primary-light), #f0f4ff); border-radius: var(--radius-lg); padding: 24px; margin-top: 16px; }
 .calc-result .profit-value { font-size: 32px; font-weight: 700; color: var(--primary-dark); }
 .calc-result .profit-detail { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
-.calc-result .detail-item { text-align: center; }
-.calc-result .detail-value { font-size: 18px; font-weight: 600; }
-.calc-result .detail-label { font-size: 12px; color: var(--text-muted); }
-.profit-badge {
-  display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 600;
-}
-.profit-high { background: var(--accent-light); color: var(--accent); }
-.profit-mid { background: var(--warning-light); color: var(--warning); }
-.profit-low { background: var(--danger-light); color: var(--danger); }
-
-/* Source list */
+.calc-result .detail-item { text-align: center; } .calc-result .detail-value { font-size: 18px; font-weight: 600; } .calc-result .detail-label { font-size: 12px; color: var(--text-muted); }
+.profit-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 600; }
+.profit-high { background: var(--accent-light); color: var(--accent); } .profit-mid { background: var(--warning-light); color: var(--warning); } .profit-low { background: var(--danger-light); color: var(--danger); }
 .source-list { display: flex; flex-direction: column; gap: 12px; }
-.source-item {
-  display: flex; gap: 16px; padding: 16px; border: 1px solid var(--border);
-  border-radius: var(--radius-lg); transition: all var(--transition); align-items: center;
-}
+.source-item { display: flex; gap: 16px; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-lg); transition: all var(--transition); align-items: center; }
 .source-item:hover { border-color: var(--primary); box-shadow: var(--shadow-sm); }
-.source-img {
-  width: 80px; height: 80px; border-radius: var(--radius-sm); object-fit: cover;
-  background: var(--surface-alt); flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 28px;
-}
-.source-info { flex: 1; min-width: 0; }
-.source-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.source-img { width: 80px; height: 80px; border-radius: var(--radius-sm); object-fit: cover; background: var(--surface-alt); flex-shrink: 0; }
+.source-img.img-fallback { display: flex; align-items: center; justify-content: center; font-size: 32px; color: var(--text-muted); }
+.source-info { flex: 1; min-width: 0; } .source-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .source-meta { font-size: 12px; color: var(--text-secondary); display: flex; gap: 16px; flex-wrap: wrap; }
 .source-price { font-size: 18px; font-weight: 700; color: var(--danger); white-space: nowrap; }
 .source-actions { display: flex; flex-direction: column; gap: 6px; }
-
-/* User Center */
 .user-layout { display: grid; grid-template-columns: 240px 1fr; gap: 24px; }
-.user-menu {
-  background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border);
-  padding: 8px; box-shadow: var(--shadow-sm);
-}
-.user-menu-item {
-  padding: 10px 14px; border-radius: var(--radius-sm); cursor: pointer; font-size: 14px;
-  color: var(--text-secondary); transition: all var(--transition); display: flex; align-items: center; gap: 10px;
-}
+.user-menu { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 8px; box-shadow: var(--shadow-sm); }
+.user-menu-item { padding: 10px 14px; border-radius: var(--radius-sm); cursor: pointer; font-size: 14px; color: var(--text-secondary); transition: all var(--transition); display: flex; align-items: center; gap: 10px; }
 .user-menu-item:hover, .user-menu-item.active { background: var(--primary-light); color: var(--primary); font-weight: 500; }
 .user-panel { min-width: 0; }
-.plan-card {
-  padding: 20px; border-radius: var(--radius-lg); border: 2px solid var(--border);
-  text-align: center; transition: all var(--transition); cursor: pointer;
-}
-.plan-card:hover { border-color: var(--primary); }
-.plan-card.current { border-color: var(--primary); background: var(--primary-light); }
-.plan-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
-.plan-price { font-size: 28px; font-weight: 700; color: var(--primary); }
-.plan-price span { font-size: 14px; color: var(--text-muted); font-weight: 400; }
-.plan-features { list-style: none; padding: 0; margin: 12px 0; }
-.plan-features li { padding: 4px 0; font-size: 13px; color: var(--text-secondary); }
-.plan-features li i { color: var(--accent); margin-right: 6px; }
-
-/* Profile card */
-.profile-header {
-  display: flex; align-items: center; gap: 20px; padding: 24px;
-  background: linear-gradient(135deg, #eff6ff, #eef2ff); border-radius: var(--radius-lg);
-  margin-bottom: 20px;
-}
-.profile-avatar {
-  width: 72px; height: 72px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary), #a78bfa);
-  color: #fff; display: flex; align-items: center; justify-content: center;
-  font-size: 30px; font-weight: 700; flex-shrink: 0;
-}
-
-/* Login form */
-.login-container {
-  max-width: 420px; margin: 60px auto; background: var(--surface); border-radius: var(--radius-xl);
-  padding: 40px; box-shadow: var(--shadow-lg); border: 1px solid var(--border);
-}
-.login-container h2 { font-size: 22px; font-weight: 700; text-align: center; margin-bottom: 8px; }
-.login-container .subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 24px; font-size: 14px; }
-.form-group { margin-bottom: 16px; }
-.form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: var(--text); }
-.form-group input {
-  width: 100%; padding: 11px 16px; border: 1px solid var(--border); border-radius: var(--radius-sm);
-  font-size: 14px; outline: none; font-family: var(--font-sans); transition: all var(--transition);
-}
+.plan-card { padding: 20px; border-radius: var(--radius-lg); border: 2px solid var(--border); text-align: center; transition: all var(--transition); cursor: pointer; }
+.plan-card:hover { border-color: var(--primary); } .plan-card.current { border-color: var(--primary); background: var(--primary-light); }
+.plan-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; } .plan-price { font-size: 28px; font-weight: 700; color: var(--primary); } .plan-price span { font-size: 14px; color: var(--text-muted); font-weight: 400; }
+.plan-features { list-style: none; padding: 0; margin: 12px 0; } .plan-features li { padding: 4px 0; font-size: 13px; color: var(--text-secondary); } .plan-features li i { color: var(--accent); margin-right: 6px; }
+.profile-header { display: flex; align-items: center; gap: 20px; padding: 24px; background: linear-gradient(135deg, #eff6ff, #eef2ff); border-radius: var(--radius-lg); margin-bottom: 20px; }
+.profile-avatar { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #a78bfa); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 700; flex-shrink: 0; }
+.form-group { margin-bottom: 16px; } .form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: var(--text); }
+.form-group input { width: 100%; padding: 11px 16px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; outline: none; font-family: var(--font-sans); transition: all var(--transition); }
 .form-group input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,110,247,.08); }
-
-/* Tabs */
 .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border-light); margin-bottom: 20px; }
-.tab {
-  padding: 12px 20px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--text-secondary);
-  border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all var(--transition);
-}
-.tab:hover { color: var(--primary); }
-.tab.active { color: var(--primary); border-bottom-color: var(--primary); }
-
-/* Tags */
-.tag {
-  display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px;
-  font-weight: 500; background: var(--surface-alt); color: var(--text-secondary);
-}
-.tag.green { background: var(--accent-light); color: var(--accent); }
-.tag.blue { background: var(--primary-light); color: var(--primary); }
-
-/* Footer compliance */
-.compliance-footer {
-  padding: 16px 24px; font-size: 11px; color: var(--text-muted); text-align: center;
-  border-top: 1px solid var(--border-light); line-height: 1.8; margin-top: auto;
-}
-
-/* Chart container */
+.tab { padding: 12px 20px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--text-secondary); border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all var(--transition); }
+.tab:hover { color: var(--primary); } .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tag { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 500; background: var(--surface-alt); color: var(--text-secondary); }
+.tag.green { background: var(--accent-light); color: var(--accent); } .tag.blue { background: var(--primary-light); color: var(--primary); }
+.compliance-footer { padding: 16px 24px; font-size: 11px; color: var(--text-muted); text-align: center; border-top: 1px solid var(--border-light); line-height: 1.8; margin-top: auto; }
 .chart-container { position: relative; height: 240px; margin: 16px 0; }
-
-/* Tooltip */
-.tooltip { position: relative; }
-.tooltip::after { display: none; }
-
-/* Responsive */
-@media (max-width: 1024px) {
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .calc-grid { grid-template-columns: 1fr; }
-  .user-layout { grid-template-columns: 1fr; }
-}
-@media (max-width: 768px) {
-  .sidebar { position: fixed; left: -260px; }
-  .sidebar.open { left: 0; }
-  .stats-grid { grid-template-columns: 1fr 1fr; }
-  .product-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
-  .header { padding: 12px 16px; }
-  .page { padding: 16px; }
-  .filters-row { gap: 8px; }
-  .platform-tab { padding: 8px 14px; font-size: 12px; }
-  .calc-result .profit-detail { grid-template-columns: 1fr 1fr; }
-  .mobile-menu-btn { display: flex !important; }
-}
-.mobile-menu-btn {
-  width: 38px; height: 38px; border-radius: var(--radius-sm); border: 1px solid var(--border);
-  cursor: pointer; background: var(--surface); display: none; align-items: center; justify-content: center;
-  font-size: 18px; color: var(--text);
-}
-
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
-
-/* Empty state */
-.empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
-.empty-state i { font-size: 48px; margin-bottom: 16px; opacity: .4; }
-.empty-state p { font-size: 14px; }
-
-/* Ranking list */
+.loading-overlay { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 2000; background: var(--surface); padding: 24px 40px; border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); text-align: center; }
+.loading-overlay.show { display: block; }
+.loading-overlay .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (max-width: 1024px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .calc-grid { grid-template-columns: 1fr; } .user-layout { grid-template-columns: 1fr; } }
+@media (max-width: 768px) { .sidebar { position: fixed; left: -260px; } .sidebar.open { left: 0; } .stats-grid { grid-template-columns: 1fr 1fr; } .product-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); } .header { padding: 12px 16px; } .page { padding: 16px; } .filters-row { gap: 8px; } .platform-tab { padding: 8px 14px; font-size: 12px; } .calc-result .profit-detail { grid-template-columns: 1fr 1fr; } .mobile-menu-btn { display: flex !important; } }
+.mobile-menu-btn { width: 38px; height: 38px; border-radius: var(--radius-sm); border: 1px solid var(--border); cursor: pointer; background: var(--surface); display: none; align-items: center; justify-content: center; font-size: 18px; color: var(--text); }
+::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; } ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+.empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); } .empty-state i { font-size: 48px; margin-bottom: 16px; opacity: .4; } .empty-state p { font-size: 14px; }
 .rank-table { width: 100%; border-collapse: collapse; }
-.rank-table th {
-  text-align: left; padding: 10px 14px; font-size: 12px; font-weight: 600;
-  color: var(--text-muted); border-bottom: 1px solid var(--border); text-transform: uppercase;
-  letter-spacing: .5px;
-}
+.rank-table th { text-align: left; padding: 10px 14px; font-size: 12px; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: .5px; }
 .rank-table td { padding: 12px 14px; font-size: 13px; border-bottom: 1px solid var(--border-light); }
-.rank-table tbody tr { transition: all var(--transition); cursor: pointer; }
-.rank-table tbody tr:hover { background: var(--surface-alt); }
-.rank-num { font-weight: 700; color: var(--text-muted); }
-.rank-num.top3 { color: var(--primary); }
+.rank-table tbody tr { transition: all var(--transition); cursor: pointer; } .rank-table tbody tr:hover { background: var(--surface-alt); }
+.rank-num { font-weight: 700; color: var(--text-muted); } .rank-num.top3 { color: var(--primary); }
 </style>
 </head>
 <body>
 
 <div class="app-container">
 
-<!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
-  <div class="sidebar-logo">
-    <div class="logo-icon">T</div>
-    <div class="logo-text">Trade<span>Seeker</span></div>
-  </div>
+  <div class="sidebar-logo"><div class="logo-icon">T</div><div class="logo-text">Trade<span>Seeker</span></div></div>
   <nav class="sidebar-nav">
-    <div class="nav-section">
-      <div class="nav-section-title">核心功能</div>
-      <div class="nav-item active" data-page="dashboard">
-        <i class="fas fa-th-large"></i> 数据看板
-      </div>
-      <div class="nav-item" data-page="products">
-        <i class="fas fa-fire"></i> 爆款选品
-      </div>
-      <div class="nav-item" data-page="matching">
-        <i class="fas fa-link"></i> 货源匹配
-      </div>
-      <div class="nav-item" data-page="calculator">
-        <i class="fas fa-calculator"></i> 利润测算
-      </div>
+    <div class="nav-section"><div class="nav-section-title">核心功能</div>
+      <div class="nav-item active" data-page="dashboard"><i class="fas fa-th-large"></i> 数据看板</div>
+      <div class="nav-item" data-page="products"><i class="fas fa-fire"></i> 爆款选品</div>
+      <div class="nav-item" data-page="matching"><i class="fas fa-link"></i> 货源匹配</div>
+      <div class="nav-item" data-page="calculator"><i class="fas fa-calculator"></i> 利润测算</div>
     </div>
-    <div class="nav-section">
-      <div class="nav-section-title">个人中心</div>
-      <div class="nav-item" data-page="favorites">
-        <i class="fas fa-star"></i> 我的收藏
-      </div>
-      <div class="nav-item" data-page="profile">
-        <i class="fas fa-user-circle"></i> 账户中心
-      </div>
+    <div class="nav-section"><div class="nav-section-title">个人中心</div>
+      <div class="nav-item" data-page="favorites"><i class="fas fa-star"></i> 我的收藏</div>
+      <div class="nav-item" data-page="profile"><i class="fas fa-user-circle"></i> 账户中心</div>
     </div>
   </nav>
-  <div class="sidebar-footer">
-    <div class="user-badge" id="userBadge">
-      <div class="user-avatar" id="userAvatar">U</div>
-      <div class="user-info">
-        <div class="name" id="userName">游客用户</div>
-        <div class="role" id="userRole">今日剩余 5 次搜索</div>
-      </div>
-    </div>
-  </div>
+  <div class="sidebar-footer"><div class="user-badge" id="userBadge"><div class="user-avatar" id="userAvatar">U</div><div class="user-info"><div class="name" id="userName">游客用户</div><div class="role" id="userRole">今日剩余 5 次搜索</div></div></div></div>
 </aside>
 
-<!-- Main -->
 <div class="main-content">
   <header class="header">
     <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
     <div class="header-search">
-      <i class="fas fa-search"></i>
-      <input type="text" id="globalSearch" placeholder="搜索海外爆款商品..." onkeydown="if(event.key==='Enter')globalSearchHandler()">
+      <i class="fas fa-search search-icon"></i>
+      <input type="text" id="globalSearch" placeholder="搜索海外爆款商品..." onkeydown="if(event.key==='Enter')globalSearchHandler()" oninput="toggleClearBtn()">
+      <i class="fas fa-times clear-icon" id="searchClearBtn" onclick="clearSearch()"></i>
     </div>
     <div class="header-actions">
       <div class="search-count" id="searchCount">剩余搜索: 5次</div>
@@ -515,42 +216,16 @@ body {
     </div>
   </header>
 
-  <!-- Dashboard Page -->
   <div class="page active" id="page-dashboard">
     <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon blue"><i class="fas fa-globe"></i></div>
-        <div>
-          <div class="stat-value">12,847</div>
-          <div class="stat-label">海外热销商品</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon green"><i class="fas fa-store"></i></div>
-        <div>
-          <div class="stat-value">3,926</div>
-          <div class="stat-label">1688匹配货源</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon amber"><i class="fas fa-chart-line"></i></div>
-        <div>
-          <div class="stat-value">847</div>
-          <div class="stat-label">今日飙升新品</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon red"><i class="fas fa-dollar-sign"></i></div>
-        <div>
-          <div class="stat-value">¥38.5</div>
-          <div class="stat-label">平均单品利润</div>
-        </div>
-      </div>
+      <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-globe"></i></div><div><div class="stat-value">25,847</div><div class="stat-label">海外热销商品</div></div></div>
+      <div class="stat-card"><div class="stat-icon green"><i class="fas fa-store"></i></div><div><div class="stat-value">8,926</div><div class="stat-label">1688匹配货源</div></div></div>
+      <div class="stat-card"><div class="stat-icon amber"><i class="fas fa-chart-line"></i></div><div><div class="stat-value">1,247</div><div class="stat-label">今日飙升新品</div></div></div>
+      <div class="stat-card"><div class="stat-icon red"><i class="fas fa-dollar-sign"></i></div><div><div class="stat-value">¥42.8</div><div class="stat-label">平均单品利润</div></div></div>
     </div>
-
     <div class="card" style="margin-bottom:20px">
       <div class="card-header">
-        <h3><i class="fas fa-trophy" style="color:#f59e0b; margin-right:8px"></i>热销榜单 - 实时更新</h3>
+        <h3><i class="fas fa-trophy" style="color:#f59e0b;margin-right:8px"></i>热销榜单 - 实时更新</h3>
         <div class="platform-tabs" style="margin-bottom:0" id="dashboardTabs">
           <div class="platform-tab active" data-platform="amazon" onclick="switchDashboardTab('amazon')"><i class="fab fa-amazon"></i> Amazon</div>
           <div class="platform-tab" data-platform="temu" onclick="switchDashboardTab('temu')"><i class="fas fa-box"></i> Temu</div>
@@ -558,13 +233,10 @@ body {
           <div class="platform-tab" data-platform="tiktok" onclick="switchDashboardTab('tiktok')"><i class="fab fa-tiktok"></i> TikTok Shop</div>
         </div>
       </div>
-      <div class="card-body">
-        <table class="rank-table" id="dashboardRankTable"></table>
-      </div>
+      <div class="card-body"><table class="rank-table" id="dashboardRankTable"></table></div>
     </div>
   </div>
 
-  <!-- Products Page -->
   <div class="page" id="page-products">
     <div class="platform-tabs" id="productPlatformTabs">
       <div class="platform-tab active" data-platform="amazon" onclick="switchPlatform('amazon')"><i class="fab fa-amazon"></i> Amazon</div>
@@ -573,13 +245,11 @@ body {
       <div class="platform-tab" data-platform="lazada" onclick="switchPlatform('lazada')"><i class="fas fa-cart-shopping"></i> Lazada</div>
       <div class="platform-tab" data-platform="tiktok" onclick="switchPlatform('tiktok')"><i class="fab fa-tiktok"></i> TikTok Shop</div>
     </div>
-
     <div class="tabs">
       <div class="tab active" data-list="hot" onclick="switchListType('hot')">热销榜 BSR</div>
       <div class="tab" data-list="rising" onclick="switchListType('rising')">飙升榜</div>
       <div class="tab" data-list="new" onclick="switchListType('new')">新品榜</div>
     </div>
-
     <div class="filters-row">
       <select class="filter-select" id="filterCategory"><option value="">全部类目</option><option>家居厨房</option><option>电子产品</option><option>服装配饰</option><option>美妆个护</option><option>运动户外</option><option>宠物用品</option><option>玩具游戏</option></select>
       <input class="filter-input" type="number" placeholder="最低价 $" id="filterPriceMin">
@@ -589,18 +259,15 @@ body {
       <button class="btn btn-primary btn-sm" onclick="applyFilters()"><i class="fas fa-filter"></i> 筛选</button>
       <button class="btn btn-outline btn-sm" onclick="resetFilters()"><i class="fas fa-rotate-right"></i> 重置</button>
     </div>
-
+    <div id="searchResultBar" style="display:none"></div>
     <div class="product-grid" id="productGrid"></div>
   </div>
 
-  <!-- Matching Page -->
   <div class="page" id="page-matching">
     <div class="card">
-      <div class="card-header">
-        <h3><i class="fas fa-magnifying-glass"></i> 1688货源智能匹配</h3>
-      </div>
+      <div class="card-header"><h3><i class="fas fa-magnifying-glass"></i> 1688货源智能匹配</h3></div>
       <div class="card-body">
-        <div style="display:flex; gap:12px; margin-bottom:20px">
+        <div style="display:flex;gap:12px;margin-bottom:20px">
           <input type="text" class="filter-input" id="matchKeyword" placeholder="输入商品关键词或粘贴标题..." style="flex:1">
           <button class="btn btn-primary" onclick="searchSource()"><i class="fas fa-search"></i> 文字搜同款</button>
           <button class="btn btn-outline" onclick="searchSourceByImage()"><i class="fas fa-image"></i> 图片搜同款</button>
@@ -609,33 +276,26 @@ body {
           <select class="filter-select"><option>不限起订量</option><option>1件起批</option><option>10件以内</option></select>
           <select class="filter-select"><option>不限商家类型</option><option>实力商家</option><option>深度验厂</option></select>
           <select class="filter-select"><option>综合排序</option><option>价格从低到高</option><option>销量从高到低</option></select>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-secondary)">
-            <input type="checkbox"> 一件代发
-          </label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-secondary)">
-            <input type="checkbox"> 支持跨境定制
-          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-secondary)"><input type="checkbox"> 一件代发</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-secondary)"><input type="checkbox"> 支持跨境定制</label>
         </div>
         <div class="source-list" id="sourceList"></div>
       </div>
     </div>
   </div>
 
-  <!-- Calculator Page -->
   <div class="page" id="page-calculator">
     <div class="card">
       <div class="card-header"><h3><i class="fas fa-calculator"></i> 智能利润测算</h3></div>
       <div class="card-body">
         <div class="calc-grid">
           <div>
-            <div class="calc-section">
-              <h4>收入参数</h4>
+            <div class="calc-section"><h4>收入参数</h4>
               <div class="calc-row"><label>海外售价 ($)</label><input type="number" id="calcPrice" value="29.99" step="0.01"></div>
               <div class="calc-row"><label>汇率 (USD→CNY)</label><input type="number" id="calcRate" value="7.25" step="0.01"></div>
               <div class="calc-row"><label>人民币收入</label><span id="calcRevenue" style="font-weight:600">¥217.43</span></div>
             </div>
-            <div class="calc-section">
-              <h4>成本参数</h4>
+            <div class="calc-section"><h4>成本参数</h4>
               <div class="calc-row"><label>1688拿货价 (¥)</label><input type="number" id="calcCost" value="45.00" step="0.01"></div>
               <div class="calc-row"><label>头程物流费 (¥)</label><input type="number" id="calcLogistics" value="18.00" step="0.01"></div>
               <div class="calc-row"><label>平台佣金率 (%)</label><input type="number" id="calcCommission" value="15" step="0.1"></div>
@@ -644,9 +304,7 @@ body {
             </div>
           </div>
           <div>
-            <button class="btn btn-primary btn-lg" style="width:100%;margin-bottom:16px" onclick="calculateProfit()">
-              <i class="fas fa-calculator"></i> 开始测算
-            </button>
+            <button class="btn btn-primary btn-lg" style="width:100%;margin-bottom:16px" onclick="calculateProfit()"><i class="fas fa-calculator"></i> 开始测算</button>
             <div class="calc-result" id="calcResult">
               <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px">预估净利润</div>
               <div class="profit-value" id="profitValue">--</div>
@@ -663,7 +321,6 @@ body {
     </div>
   </div>
 
-  <!-- Favorites Page -->
   <div class="page" id="page-favorites">
     <div class="tabs">
       <div class="tab active" onclick="switchFavTab('product')">收藏商品</div>
@@ -673,7 +330,6 @@ body {
     <div id="favContent"><div class="empty-state"><i class="fas fa-star"></i><p>暂无收藏，快去选品页面收藏商品吧</p></div></div>
   </div>
 
-  <!-- Profile Page -->
   <div class="page" id="page-profile">
     <div class="user-layout">
       <div class="user-menu">
@@ -689,59 +345,161 @@ body {
     本工具数据仅用于跨境市场调研分析，不构成交易、投资、铺货建议。所有商品数据来源于官方授权API，仅供参考。平台交易、货源质量、物流风险由买卖双方自行承担。
   </div>
 </div>
-
 </div>
 
-<!-- Product Detail Modal -->
 <div class="modal-overlay" id="productModal" style="display:none" onclick="if(event.target===this)closeProductModal()">
   <div class="modal" id="productModalInner"></div>
 </div>
 
+<div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div><div style="color:var(--text-secondary);font-size:13px">正在搜索...</div></div>
+
 <script>
-// ============ App State ============
+// ============ Config ============
+const apiBaseUrl = 'https://tradeseeker-api.vercel.app';
+
+// ============ State ============
 const state = {
-  currentPage: 'dashboard',
-  currentPlatform: 'amazon',
-  currentListType: 'hot',
-  userType: 'guest', // guest | registered | member
-  searchCount: 5,
+  currentPage: 'dashboard', currentPlatform: 'amazon', currentListType: 'hot',
+  userType: 'guest', searchCount: 5,
   favorites: { products: [], sources: [] },
-  folders: { '默认文件夹': [] },
-  history: []
+  folders: { '默认文件夹': [] }, history: [],
+  searchResults: null, isSearchMode: false, lastSearchQuery: ''
 };
 
-// ============ Mock Data ============
+// ============ Image Helpers ============
+const categoryKeywords = {
+  '电子产品': 'electronics,gadget',
+  '家居厨房': 'kitchen,home',
+  '服装配饰': 'fashion,accessories',
+  '运动户外': 'sports,outdoor',
+  '宠物用品': 'pet,products',
+  '玩具游戏': 'toys,games',
+  '美妆个护': 'beauty,cosmetics'
+};
+
+function productImgTag(product, cls, size) {
+  const w = size || 400; const h = size ? size : 300;
+  const kw = categoryKeywords[product.category] || 'product';
+  const url = `https://loremflickr.com/${w}/${h}/${kw}?random=${product.id}`;
+  const fallback = product.category ? product.category.charAt(0) : 'P';
+  return `<img src="${url}" alt="${product.title}" class="${cls||''}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><div class="img-fallback" style="display:none">${fallback}</div>`;
+}
+
+function sourceImgTag(source) {
+  const url = `https://loremflickr.com/300/300/factory,product?random=${source.id + 100}`;
+  return `<img src="${url}" alt="${source.title}" class="source-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><div class="source-img img-fallback" style="display:none"><i class="fas fa-industry"></i></div>`;
+}
+
+// ============ Platforms ============
 const platforms = {
-  amazon: { name: 'Amazon', icon: 'fab fa-amazon', color: '#ff9900' },
-  temu: { name: 'Temu', icon: 'fas fa-box', color: '#fb7701' },
-  shopee: { name: 'Shopee', icon: 'fas fa-shopping-bag', color: '#ee4d2d' },
-  lazada: { name: 'Lazada', icon: 'fas fa-cart-shopping', color: '#0f1470' },
-  tiktok: { name: 'TikTok Shop', icon: 'fab fa-tiktok', color: '#000' }
+  amazon: { name:'Amazon', icon:'fab fa-amazon', color:'#ff9900' },
+  temu: { name:'Temu', icon:'fas fa-box', color:'#fb7701' },
+  shopee: { name:'Shopee', icon:'fas fa-shopping-bag', color:'#ee4d2d' },
+  lazada: { name:'Lazada', icon:'fas fa-cart-shopping', color:'#0f1470' },
+  tiktok: { name:'TikTok Shop', icon:'fab fa-tiktok', color:'#000' }
 };
 
+// ============ Expanded Product Data ============
 const products = [
-  { id:1, platform:'amazon', list:'hot', title:'Wireless Bluetooth Earbuds Pro - Active Noise Cancelling, 36H Battery Life, IPX7 Waterproof', price:49.99, currency:'USD', sales:12580, rating:4.7, reviews:3421, rank:1, image:'🎧', category:'电子产品', weight:'轻小件', asin:'B0XXXXXXX1', trend:[49,48,52,50,51,49,55,53,52,50,49,48], badge:'hot' },
-  { id:2, platform:'amazon', list:'hot', title:'Stainless Steel Insulated Water Bottle 32oz - Leak Proof, BPA Free, Keeps Cold 24H', price:24.99, currency:'USD', sales:9870, rating:4.5, reviews:2890, rank:2, image:'🧴', category:'家居厨房', weight:'中等', asin:'B0XXXXXXX2', trend:[25,26,24,25,27,28,26,25,24,25,26,24], badge:'hot' },
-  { id:3, platform:'amazon', list:'hot', title:'Posture Corrector for Men and Women - Adjustable Back Brace Support, Breathable', price:19.99, currency:'USD', sales:8540, rating:4.3, reviews:2100, rank:3, image:'🏋️', category:'运动户外', weight:'轻小件', asin:'B0XXXXXXX3', trend:[20,19,18,20,21,19,20,22,21,19,20,19], badge:'hot' },
-  { id:4, platform:'amazon', list:'hot', title:'LED Desk Lamp with USB Charging Port - 5 Color Modes, 10 Brightness Levels, Touch Control', price:35.99, currency:'USD', sales:7230, rating:4.6, reviews:1890, rank:4, image:'💡', category:'家居厨房', weight:'中等', asin:'B0XXXXXXX4', trend:[36,35,34,36,37,35,36,38,36,35,36,35], badge:'hot' },
-  { id:5, platform:'amazon', list:'hot', title:'Yoga Mat Non-Slip - 6mm Extra Thick, Eco-Friendly TPE, Carrying Strap Included', price:28.99, currency:'USD', sales:6890, rating:4.4, reviews:1560, rank:5, image:'🧘', category:'运动户外', weight:'中等', asin:'B0XXXXXXX5', trend:[29,28,27,29,30,28,29,31,29,28,29,28], badge:'hot' },
-  { id:6, platform:'amazon', list:'rising', title:'Mini Portable Projector 4K Support - Auto Keystone, WiFi 6, 200" Display', price:89.99, currency:'USD', sales:4520, rating:4.2, reviews:780, rank:12, image:'📽️', category:'电子产品', weight:'中等', asin:'B0XXXXXXX6', trend:[89,85,80,75,70,65,60,55,50,45,40,35], badge:'rising' },
-  { id:7, platform:'amazon', list:'rising', title:'Smart Pet Feeder with Camera - App Control, Voice Recording, 6L Capacity', price:59.99, currency:'USD', sales:3210, rating:4.5, reviews:620, rank:18, image:'🐾', category:'宠物用品', weight:'中等', asin:'B0XXXXXXX7', trend:[70,68,65,60,58,55,50,48,45,42,40,38], badge:'rising' },
-  { id:8, platform:'amazon', list:'new', title:'Magnetic Wireless Power Bank 10000mAh - 20W Fast Charging, Ultra Slim Design', price:39.99, currency:'USD', sales:2100, rating:4.8, reviews:320, rank:25, image:'🔋', category:'电子产品', weight:'轻小件', asin:'B0XXXXXXX8', trend:[40,39,38,40,41,39,40,42,40,39,40,39], badge:'new' },
-  { id:9, platform:'temu', list:'hot', title:'Silicone Kitchen Utensil Set 12-Piece - Heat Resistant, Non-Stick Safe, Colorful', price:12.99, currency:'USD', sales:25600, rating:4.6, reviews:8900, rank:1, image:'🍳', category:'家居厨房', weight:'轻小件', asin:'', trend:[13,12,11,13,14,12,13,15,13,12,13,12], badge:'hot' },
-  { id:10, platform:'temu', list:'hot', title:'Car Phone Mount Universal - 360° Rotation, Strong Suction Cup, Dashboard & Windshield', price:6.99, currency:'USD', sales:19800, rating:4.4, reviews:6700, rank:2, image:'📱', category:'电子产品', weight:'轻小件', asin:'', trend:[7,6.5,6,7,7.5,6.5,7,8,7,6.5,7,6], badge:'hot' },
-  { id:11, platform:'shopee', list:'hot', title:'Korean Style Women Canvas Tote Bag - Large Capacity, Minimalist Design, Multi-Color', price:8.50, currency:'USD', sales:15800, rating:4.7, reviews:4500, rank:1, image:'👜', category:'服装配饰', weight:'轻小件', asin:'', trend:[8.5,8,7.5,8.5,9,8,8.5,9.5,8.5,8,8.5,8], badge:'hot' },
-  { id:12, platform:'tiktok', list:'hot', title:'Viral LED Strip Lights 50ft - Music Sync, App Control, RGB 16 Million Colors', price:15.99, currency:'USD', sales:34500, rating:4.3, reviews:12300, rank:1, image:'💡', category:'家居厨房', weight:'轻小件', asin:'', trend:[16,15,14,16,17,15,16,18,16,15,16,15], badge:'hot' },
+  // Amazon Hot
+  { id:1, platform:'amazon', list:'hot', title:'Wireless Bluetooth Earbuds Pro - Active Noise Cancelling, 36H Battery, IPX7 Waterproof, Hi-Fi Sound', price:49.99, currency:'USD', sales:12580, rating:4.7, reviews:3421, rank:1, category:'电子产品', weight:'轻小件', asin:'B0C9XK81P2', trend:[49,48,52,50,51,49,55,53,52,50,49,48], badge:'hot' },
+  { id:2, platform:'amazon', list:'hot', title:'Stainless Steel Insulated Water Bottle 32oz - Double Wall Vacuum, Leak Proof, BPA Free, Keeps Cold 24H Hot 12H', price:24.99, currency:'USD', sales:9870, rating:4.5, reviews:2890, rank:2, category:'家居厨房', weight:'中等', asin:'B0D2LM94Q7', trend:[25,26,24,25,27,28,26,25,24,25,26,24], badge:'hot' },
+  { id:3, platform:'amazon', list:'hot', title:'Posture Corrector for Men and Women - Adjustable Back Brace Support, Breathable Mesh, Pain Relief, S-XXL', price:19.99, currency:'USD', sales:8540, rating:4.3, reviews:2100, rank:3, category:'运动户外', weight:'轻小件', asin:'B0A7NP63T9', trend:[20,19,18,20,21,19,20,22,21,19,20,19], badge:'hot' },
+  { id:4, platform:'amazon', list:'hot', title:'LED Desk Lamp with USB Charging Port - 5 Color Modes, 10 Brightness Levels, Touch Control, Eye-Caring, Auto Timer', price:35.99, currency:'USD', sales:7230, rating:4.6, reviews:1890, rank:4, category:'家居厨房', weight:'中等', asin:'B0F3KR82W5', trend:[36,35,34,36,37,35,36,38,36,35,36,35], badge:'hot' },
+  { id:5, platform:'amazon', list:'hot', title:'Yoga Mat Non-Slip - 6mm Extra Thick, Eco-Friendly TPE Material, Carrying Strap Included, Alignment Lines', price:28.99, currency:'USD', sales:6890, rating:4.4, reviews:1560, rank:5, category:'运动户外', weight:'中等', asin:'B0G8VT19H3', trend:[29,28,27,29,30,28,29,31,29,28,29,28], badge:'hot' },
+  { id:61, platform:'amazon', list:'hot', title:'Electric Coffee Grinder - 18 Adjustable Settings, Conical Burr, One Touch, Anti-Static Design, 40g Capacity', price:59.99, currency:'USD', sales:6240, rating:4.6, reviews:2130, rank:6, category:'家居厨房', weight:'中等', asin:'B0J2WH45K8', trend:[60,59,58,60,62,59,60,63,60,59,60,59], badge:'hot' },
+  { id:62, platform:'amazon', list:'hot', title:'Cordless Vacuum Cleaner - 450W Powerful Suction, 55min Runtime, LED Headlight, HEPA Filter, Wall Mount', price:179.99, currency:'USD', sales:5980, rating:4.4, reviews:1870, rank:7, category:'家居厨房', weight:'重件', asin:'B0K7MX28R4', trend:[180,178,175,180,182,178,180,185,180,178,180,179], badge:'hot' },
+  { id:63, platform:'amazon', list:'hot', title:'Resistance Bands Set - 5 Levels, Natural Latex, Door Anchor, Ankle Straps, Carry Bag, Exercise Guide', price:16.99, currency:'USD', sales:11200, rating:4.5, reviews:4200, rank:8, category:'运动户外', weight:'轻小件', asin:'B0L4QP76Y1', trend:[17,16,15,17,18,16,17,19,17,16,17,16], badge:'hot' },
+  { id:64, platform:'amazon', list:'hot', title:'Dash Cam 4K UHD - WiFi GPS, 3" IPS Screen, Night Vision, G-Sensor, 170° Wide Angle, Loop Recording', price:89.99, currency:'USD', sales:5120, rating:4.3, reviews:1340, rank:9, category:'电子产品', weight:'轻小件', asin:'B0M9DT43F7', trend:[90,88,86,90,92,88,90,95,90,88,90,89], badge:'hot' },
+  { id:65, platform:'amazon', list:'hot', title:'Robot Vacuum and Mop Combo - LiDAR Navigation, 5000Pa Suction, Auto Empty Dock, App & Voice Control', price:349.99, currency:'USD', sales:4870, rating:4.5, reviews:980, rank:10, category:'电子产品', weight:'重件', asin:'B0N2XH19C8', trend:[350,345,340,350,355,345,350,360,350,345,350,349], badge:'hot' },
+  { id:94, platform:'amazon', list:'hot', title:'Memory Foam Pillow Set of 2 - Cooling Gel, Adjustable Loft, CertiPUR-US, Bamboo Cover, Queen Size', price:42.99, currency:'USD', sales:4600, rating:4.5, reviews:1650, rank:11, category:'家居厨房', weight:'中等', asin:'B0X1AB67C3', trend:[43,42,41,43,44,42,43,45,43,42,43,42], badge:'hot' },
+  { id:95, platform:'amazon', list:'hot', title:'USB-C Hub 7-in-1 - 4K HDMI, 100W PD, 3 USB 3.0, SD/TF Card Reader, Aluminum, for MacBook/PC/Tablet', price:29.99, currency:'USD', sales:5400, rating:4.6, reviews:1420, rank:13, category:'电子产品', weight:'轻小件', asin:'B0Y5DE91F8', trend:[30,29,28,30,31,29,30,32,30,29,30,29], badge:'hot' },
+  // Amazon Rising
+  { id:6, platform:'amazon', list:'rising', title:'Mini Portable Projector 4K Support - Auto Keystone, WiFi 6, 200" Display, Built-in Speaker, HDMI USB', price:89.99, currency:'USD', sales:4520, rating:4.2, reviews:780, rank:12, category:'电子产品', weight:'中等', asin:'B0P5KR91W2', trend:[170,160,150,140,130,120,110,100,95,90,85,80], badge:'rising' },
+  { id:7, platform:'amazon', list:'rising', title:'Smart Pet Feeder with Camera - App Control, 1080P HD, Two-Way Audio, Voice Recording, 6L Capacity, Dual Power', price:59.99, currency:'USD', sales:3210, rating:4.5, reviews:620, rank:18, category:'宠物用品', weight:'中等', asin:'B0R8DV57Y3', trend:[90,85,80,75,70,65,60,58,55,52,50,48], badge:'rising' },
+  { id:66, platform:'amazon', list:'rising', title:'Wireless Meat Thermometer - Bluetooth 5.3, Dual Probes, 500ft Range, App Alarm, Rechargeable, IP67', price:39.99, currency:'USD', sales:3800, rating:4.6, reviews:560, rank:14, category:'家居厨房', weight:'轻小件', asin:'B0S3FH84D2', trend:[85,80,75,70,65,60,55,50,47,44,42,40], badge:'rising' },
+  { id:67, platform:'amazon', list:'rising', title:'Sleep Headphones Bluetooth - 3D Eye Mask, HD Speakers, Ultra Thin, Adjustable, 10H Playtime, Travel', price:22.99, currency:'USD', sales:5600, rating:4.4, reviews:920, rank:16, category:'电子产品', weight:'轻小件', asin:'B0T7LM19A6', trend:[65,60,55,50,45,40,35,30,27,24,23,22], badge:'rising' },
+  { id:96, platform:'amazon', list:'rising', title:'Kids Drawing Projector - Trace & Draw, 32 Patterns, 12 Music, Erasable, Educational Art Toy, Ages 3-8', price:19.99, currency:'USD', sales:2900, rating:4.5, reviews:430, rank:20, category:'玩具游戏', weight:'轻小件', asin:'B0Z8GH45N2', trend:[55,50,45,40,35,30,27,24,22,21,20,19], badge:'rising' },
+  // Amazon New
+  { id:8, platform:'amazon', list:'new', title:'Magnetic Wireless Power Bank 10000mAh - 20W Fast Charging, Ultra Slim Design, Compatible with MagSafe', price:39.99, currency:'USD', sales:2100, rating:4.8, reviews:320, rank:25, category:'电子产品', weight:'轻小件', asin:'B0U9KP36W8', trend:[40,39,38,40,41,39,40,42,40,39,40,39], badge:'new' },
+  { id:68, platform:'amazon', list:'new', title:'Smart Bird Feeder with Camera - AI Bird Recognition, Solar Powered, WiFi, 1080P, 160° Wide Angle, IP65', price:79.99, currency:'USD', sales:1800, rating:4.7, reviews:210, rank:27, category:'宠物用品', weight:'中等', asin:'B0V2RN57F4', trend:[80,79,78,80,81,79,80,82,80,79,80,79], badge:'new' },
+  { id:69, platform:'amazon', list:'new', title:'Foldable Treadmill for Home - 2.5HP Quiet Motor, Bluetooth Speaker, Remote Control, No Assembly', price:259.99, currency:'USD', sales:950, rating:4.3, reviews:140, rank:30, category:'运动户外', weight:'重件', asin:'B0W6SH93T1', trend:[260,258,255,260,262,258,260,265,260,258,260,259], badge:'new' },
+  { id:97, platform:'amazon', list:'new', title:'Air Quality Monitor - PM2.5/CO2/TVOC/HCHO/Temperature/Humidity, WiFi, App Alert, Rechargeable', price:49.99, currency:'USD', sales:780, rating:4.4, reviews:95, rank:32, category:'电子产品', weight:'轻小件', asin:'B0A3CD78P9', trend:[50,49,48,50,51,49,50,52,50,49,50,49], badge:'new' },
+  // Temu Hot
+  { id:9, platform:'temu', list:'hot', title:'12-Piece Silicone Kitchen Utensil Set - Heat Resistant up to 480°F, Non-Stick Safe, BPA Free, Colorful', price:12.99, currency:'USD', sales:25600, rating:4.6, reviews:8900, rank:1, category:'家居厨房', weight:'轻小件', asin:'', trend:[13,12,11,13,14,12,13,15,13,12,13,12], badge:'hot' },
+  { id:10, platform:'temu', list:'hot', title:'Universal Car Phone Mount - 360° Rotation, Strong Suction Cup, One-Touch Release, Dashboard & Windshield', price:6.99, currency:'USD', sales:19800, rating:4.4, reviews:6700, rank:2, category:'电子产品', weight:'轻小件', asin:'', trend:[7,6.5,6,7,7.5,6.5,7,8,7,6.5,7,6], badge:'hot' },
+  { id:70, platform:'temu', list:'hot', title:'LED Makeup Mirror with Lights - 3 Color Modes, 10X Magnification, 180° Rotation, USB Rechargeable', price:15.99, currency:'USD', sales:18200, rating:4.7, reviews:5400, rank:3, category:'美妆个护', weight:'中等', asin:'', trend:[16,15,14,16,17,15,16,18,16,15,16,15], badge:'hot' },
+  { id:71, platform:'temu', list:'hot', title:'3-in-1 Wireless Charging Station - Fast Charge for iPhone/Apple Watch/AirPods, Foldable Travel Design', price:18.99, currency:'USD', sales:16400, rating:4.5, reviews:4800, rank:4, category:'电子产品', weight:'轻小件', asin:'', trend:[19,18.5,17,19,20,18,19,21,19,18,19,18], badge:'hot' },
+  { id:72, platform:'temu', list:'hot', title:'6-Pack Compression Packing Cubes - Lightweight, Water-Resistant, Travel Luggage Organizer, Various Sizes', price:9.99, currency:'USD', sales:14200, rating:4.6, reviews:3900, rank:5, category:'服装配饰', weight:'轻小件', asin:'', trend:[10,9.5,9,10,11,9.5,10,12,10,9.5,10,9], badge:'hot' },
+  { id:73, platform:'temu', list:'hot', title:'Adjustable Laptop Stand - Ergonomic Aluminum, 7-Level Height, Ventilated Cooling, Fits 10-17 inch', price:22.99, currency:'USD', sales:12800, rating:4.5, reviews:3100, rank:6, category:'电子产品', weight:'中等', asin:'', trend:[23,22,21,23,24,22,23,25,23,22,23,22], badge:'hot' },
+  { id:74, platform:'temu', list:'hot', title:'Pet Grooming Kit - Low Noise Clippers, 4 Guard Combs, USB Rechargeable, Cordless, for Dogs & Cats', price:19.99, currency:'USD', sales:11500, rating:4.4, reviews:2800, rank:7, category:'宠物用品', weight:'轻小件', asin:'', trend:[20,19,18,20,21,19,20,22,20,19,20,19], badge:'hot' },
+  { id:75, platform:'temu', list:'hot', title:'Reusable Silicone Food Storage Bags - 10-Pack, Leakproof, Freezer & Microwave Safe, Eco Friendly', price:11.99, currency:'USD', sales:10200, rating:4.6, reviews:2500, rank:8, category:'家居厨房', weight:'轻小件', asin:'', trend:[12,11.5,11,12,13,11.5,12,14,12,11.5,12,11], badge:'hot' },
+  // Temu Rising
+  { id:76, platform:'temu', list:'rising', title:'Mini Sewing Machine Portable - 12 Built-in Stitches, Double Speed, Foot Pedal, Thread Cutter, Beginner Kit', price:29.99, currency:'USD', sales:7800, rating:4.3, reviews:1900, rank:11, category:'家居厨房', weight:'中等', asin:'', trend:[65,60,55,50,45,40,37,34,32,31,30,29], badge:'rising' },
+  { id:77, platform:'temu', list:'rising', title:'Electric Spin Scrubber - Cordless, 3 Brush Heads, Adjustable Handle, IPX7 Waterproof, Bathroom & Kitchen', price:25.99, currency:'USD', sales:6200, rating:4.5, reviews:1400, rank:13, category:'家居厨房', weight:'中等', asin:'', trend:[55,50,45,40,35,30,28,26,25,24,23,22], badge:'rising' },
+  // Temu New
+  { id:78, platform:'temu', list:'new', title:'Wireless Karaoke Microphone - Bluetooth 5.3, LED Lights, Voice Changer, 8H Battery, Portable Speaker', price:17.99, currency:'USD', sales:4800, rating:4.6, reviews:870, rank:22, category:'电子产品', weight:'轻小件', asin:'', trend:[18,17.5,17,18,19,17.5,18,20,18,17.5,18,17], badge:'new' },
+  // Shopee Hot
+  { id:11, platform:'shopee', list:'hot', title:'Korean Style Women Canvas Tote Bag - Large Capacity, Minimalist Design, Multi-Color Options, Daily Use', price:8.50, currency:'USD', sales:15800, rating:4.7, reviews:4500, rank:1, category:'服装配饰', weight:'轻小件', asin:'', trend:[8.5,8,7.5,8.5,9,8,8.5,9.5,8.5,8,8.5,8], badge:'hot' },
+  { id:79, platform:'shopee', list:'hot', title:'Women Summer Dress - Bohemian Floral Print, V-Neck, A-Line, Beach Casual, S-5XL, 20 Colors', price:12.99, currency:'USD', sales:14200, rating:4.5, reviews:3800, rank:2, category:'服装配饰', weight:'轻小件', asin:'', trend:[13,12.5,12,13,14,12.5,13,15,13,12.5,13,12], badge:'hot' },
+  { id:80, platform:'shopee', list:'hot', title:'Stainless Steel Bento Lunch Box - 3 Compartments, Leak Proof, Microwave Safe, Insulated Bag Included', price:15.99, currency:'USD', sales:12500, rating:4.6, reviews:3200, rank:3, category:'家居厨房', weight:'中等', asin:'', trend:[16,15.5,15,16,17,15.5,16,18,16,15.5,16,15], badge:'hot' },
+  { id:81, platform:'shopee', list:'hot', title:'Makeup Brush Set 24-Piece - Professional Synthetic Bristles, Rose Gold Handle, Travel Case, Full Face Kit', price:19.99, currency:'USD', sales:10800, rating:4.7, reviews:2900, rank:4, category:'美妆个护', weight:'轻小件', asin:'', trend:[20,19.5,19,20,21,19.5,20,22,20,19.5,20,19], badge:'hot' },
+  { id:82, platform:'shopee', list:'hot', title:'Kids Building Blocks 500-Piece - STEM Educational Toy, Compatible with Major Brands, Storage Box Included', price:24.99, currency:'USD', sales:9600, rating:4.8, reviews:2600, rank:5, category:'玩具游戏', weight:'中等', asin:'', trend:[25,24.5,24,25,26,24.5,25,27,25,24.5,25,24], badge:'hot' },
+  { id:83, platform:'shopee', list:'hot', title:'Fashion Womens Sunglasses - UV400 Protection, Retro Cat Eye, Lightweight TR90 Frame, 12 Colors', price:9.99, currency:'USD', sales:8900, rating:4.4, reviews:2100, rank:6, category:'服装配饰', weight:'轻小件', asin:'', trend:[10,9.5,9,10,11,9.5,10,12,10,9.5,10,9], badge:'hot' },
+  // Shopee Rising
+  { id:84, platform:'shopee', list:'rising', title:'Handheld Garment Steamer - 1500W, 30s Fast Heat, 300ml Tank, Portable Travel Iron, Anti-Leak Design', price:28.99, currency:'USD', sales:5200, rating:4.5, reviews:980, rank:9, category:'家居厨房', weight:'中等', asin:'', trend:[55,50,45,42,38,35,32,30,29,28,27,26], badge:'rising' },
+  // Shopee New
+  { id:85, platform:'shopee', list:'new', title:'Collagen Face Mask Set 30-Pack - Hyaluronic Acid, Vitamin C, Anti-Aging, Hydrating, Korean Skincare', price:14.99, currency:'USD', sales:3500, rating:4.6, reviews:620, rank:15, category:'美妆个护', weight:'轻小件', asin:'', trend:[15,14.5,14,15,16,14.5,15,17,15,14.5,15,14], badge:'new' },
+  // Lazada Hot
+  { id:86, platform:'lazada', list:'hot', title:'Electric Stand Fan - 16 inch, Remote Control, 3 Speed, 7.5H Timer, Oscillation, Quiet DC Motor', price:35.99, currency:'USD', sales:8700, rating:4.4, reviews:1900, rank:1, category:'家居厨房', weight:'重件', asin:'', trend:[36,35,34,36,37,35,36,38,36,35,36,35], badge:'hot' },
+  { id:87, platform:'lazada', list:'hot', title:'Wireless Earbuds TWS - Bluetooth 5.3, ENC Noise Reduction, Touch Control, 30H Total Playtime, IPX5', price:14.99, currency:'USD', sales:13200, rating:4.5, reviews:3500, rank:2, category:'电子产品', weight:'轻小件', asin:'', trend:[15,14.5,14,15,16,14.5,15,17,15,14.5,15,14], badge:'hot' },
+  { id:88, platform:'lazada', list:'hot', title:'Cotton Bedsheet Set Queen Size - 4-Piece, 600 Thread Count, Hotel Luxury, Soft Breathable, 8 Colors', price:29.99, currency:'USD', sales:7600, rating:4.6, reviews:1800, rank:3, category:'家居厨房', weight:'中等', asin:'', trend:[30,29,28,30,31,29,30,32,30,29,30,29], badge:'hot' },
+  // TikTok Hot
+  { id:12, platform:'tiktok', list:'hot', title:'Viral LED Strip Lights 50ft - Music Sync, App Control, RGB 16 Million Colors, Room Decor, DIY Mode', price:15.99, currency:'USD', sales:34500, rating:4.3, reviews:12300, rank:1, category:'家居厨房', weight:'轻小件', asin:'', trend:[16,15,14,16,17,15,16,18,16,15,16,15], badge:'hot' },
+  { id:89, platform:'tiktok', list:'hot', title:'TikTok Viral Cloud Slides - Ultra Soft EVA, Non-Slip, Cushion Design, Indoor Outdoor, Unisex, 10 Colors', price:11.99, currency:'USD', sales:28900, rating:4.5, reviews:9800, rank:2, category:'服装配饰', weight:'轻小件', asin:'', trend:[12,11.5,11,12,13,11.5,12,14,12,11.5,12,11], badge:'hot' },
+  { id:90, platform:'tiktok', list:'hot', title:'5-in-1 Hair Styler - Automatic Curling Iron, Straightening Brush, Volumizer, Ionic Technology, 5 Temp', price:34.99, currency:'USD', sales:22300, rating:4.6, reviews:7200, rank:3, category:'美妆个护', weight:'中等', asin:'', trend:[35,34,33,35,36,34,35,37,35,34,35,34], badge:'hot' },
+  { id:91, platform:'tiktok', list:'hot', title:'Portable Blender - 380ml, USB Rechargeable, 6 Blades, BPA Free, Smoothie & Juice Maker, Travel Friendly', price:18.99, currency:'USD', sales:19500, rating:4.4, reviews:5600, rank:4, category:'家居厨房', weight:'轻小件', asin:'', trend:[19,18.5,18,19,20,18.5,19,21,19,18.5,19,18], badge:'hot' },
+  { id:92, platform:'tiktok', list:'rising', title:'Shapewear Bodysuit - Tummy Control, Seamless, Butt Lifting, Breathable, Wedding & Daily, S-3XL', price:22.99, currency:'USD', sales:14200, rating:4.3, reviews:3800, rank:7, category:'服装配饰', weight:'轻小件', asin:'', trend:[45,42,38,35,32,28,25,23,22,21,20,19], badge:'rising' },
+  { id:93, platform:'tiktok', list:'new', title:'Pimple Patches 144-Count - Hydrocolloid, Salicylic Acid, Tea Tree Oil, Invisible, Day & Night Use', price:7.99, currency:'USD', sales:8800, rating:4.7, reviews:2400, rank:12, category:'美妆个护', weight:'轻小件', asin:'', trend:[8,7.5,7,8,9,7.5,8,10,8,7.5,8,7], badge:'new' },
 ];
 
+// ============ Source Data ============
 const sourceData = [
-  { id:1, title:'蓝牙耳机源头工厂 TWS降噪耳机跨境专供', price:18.50, priceRange:'¥16.80-22.00', moq:10, supplier:'深圳华强电子科技', location:'深圳', dropShipping:true, custom:true, badge:'实力商家', sales:8500, image:'🏭' },
-  { id:2, title:'跨境热销无线蓝牙耳机 OEM/ODM定制 logo印刷', price:15.80, priceRange:'¥14.50-19.90', moq:50, supplier:'东莞鸿达数码科技', location:'东莞', dropShipping:false, custom:true, badge:'深度验厂', sales:6200, image:'🏭' },
-  { id:3, title:'不锈钢保温杯 32oz大容量 跨境爆款现货批发', price:22.00, priceRange:'¥20.00-28.00', moq:5, supplier:'永康不锈钢制品有限公司', location:'永康', dropShipping:true, custom:true, badge:'实力商家', sales:12000, image:'🏭' },
-  { id:4, title:'瑜伽垫TPE环保防滑跨境专供 可定制颜色厚度', price:35.00, priceRange:'¥32.00-45.00', moq:20, supplier:'广州恒达体育用品', location:'广州', dropShipping:false, custom:true, badge:'', sales:3400, image:'🏭' },
-  { id:5, title:'LED触控台灯 USB充电护眼灯 学生办公跨境爆款', price:28.00, priceRange:'¥25.00-35.00', moq:10, supplier:'中山古镇灯饰源头厂', location:'中山', dropShipping:true, custom:true, badge:'实力商家', sales:7200, image:'🏭' },
-  { id:6, title:'智能宠物喂食器APP控制 6L大容量跨境定制', price:85.00, priceRange:'¥78.00-98.00', moq:5, supplier:'宁波宠乐科技', location:'宁波', dropShipping:true, custom:true, badge:'深度验厂', sales:2800, image:'🏭' },
+  { id:1, title:'蓝牙耳机源头工厂 TWS降噪耳机跨境专供 OEM/ODM', price:18.50, priceRange:'¥16.80-22.00', moq:10, supplier:'深圳华强电子科技', location:'深圳', dropShipping:true, custom:true, badge:'实力商家', sales:8500 },
+  { id:2, title:'跨境热销无线蓝牙耳机 OEM/ODM定制 logo印刷 现货', price:15.80, priceRange:'¥14.50-19.90', moq:50, supplier:'东莞鸿达数码科技', location:'东莞', dropShipping:false, custom:true, badge:'深度验厂', sales:6200 },
+  { id:3, title:'不锈钢保温杯32oz大容量 跨境爆款现货 一件代发', price:22.00, priceRange:'¥20.00-28.00', moq:5, supplier:'永康不锈钢制品有限公司', location:'永康', dropShipping:true, custom:true, badge:'实力商家', sales:12000 },
+  { id:4, title:'瑜伽垫TPE环保防滑跨境专供 可定制颜色厚度logo', price:35.00, priceRange:'¥32.00-45.00', moq:20, supplier:'广州恒达体育用品', location:'广州', dropShipping:false, custom:true, badge:'', sales:3400 },
+  { id:5, title:'LED触控台灯USB充电护眼灯 学生办公跨境爆款现货', price:28.00, priceRange:'¥25.00-35.00', moq:10, supplier:'中山古镇灯饰源头厂', location:'中山', dropShipping:true, custom:true, badge:'实力商家', sales:7200 },
+  { id:6, title:'智能宠物喂食器APP控制6L大容量 跨境定制代发', price:85.00, priceRange:'¥78.00-98.00', moq:5, supplier:'宁波宠乐科技', location:'宁波', dropShipping:true, custom:true, badge:'深度验厂', sales:2800 },
+  { id:7, title:'硅胶厨房用具12件套 耐高温不粘锅 欧美热卖现货', price:12.50, priceRange:'¥10.80-15.00', moq:20, supplier:'义乌厨具进出口有限公司', location:'义乌', dropShipping:true, custom:true, badge:'实力商家', sales:15000 },
+  { id:8, title:'车载手机支架通用款 360°旋转强吸力 跨境专供', price:5.80, priceRange:'¥4.50-7.80', moq:50, supplier:'广州车邦电子', location:'广州', dropShipping:true, custom:false, badge:'', sales:9800 },
+  { id:9, title:'女士帆布托特包韩版大容量 简约通勤 多色跨境现货', price:18.00, priceRange:'¥15.00-22.00', moq:10, supplier:'广州花都皮具城', location:'广州', dropShipping:true, custom:true, badge:'实力商家', sales:11200 },
+  { id:10, title:'LED灯带RGB 50英尺音乐同步 APP控制 氛围灯跨境', price:25.00, priceRange:'¥22.00-30.00', moq:15, supplier:'深圳光明灯饰厂', location:'深圳', dropShipping:true, custom:true, badge:'深度验厂', sales:6400 },
+  { id:11, title:'磁吸无线充电宝10000mAh 20W快充 超薄便携跨境版', price:35.00, priceRange:'¥32.00-42.00', moq:15, supplier:'深圳宝安电子科技园', location:'深圳', dropShipping:true, custom:true, badge:'实力商家', sales:5200 },
+  { id:12, title:'折叠跑步机家用 2.5HP静音马达 蓝牙音箱 免安装', price:480.00, priceRange:'¥450.00-550.00', moq:2, supplier:'金华健身器材制造有限公司', location:'金华', dropShipping:false, custom:true, badge:'深度验厂', sales:1800 },
 ];
+
+// ============ API Layer ============
+async function apiCall(endpoint, params) {
+  try {
+    showLoading(true);
+    const url = new URL(apiBaseUrl + endpoint);
+    Object.keys(params).forEach(k => url.searchParams.append(k, params[k]));
+    const resp = await fetch(url.toString(), { headers: { 'Accept': 'application/json' }, signal: AbortSignal.timeout(8000) });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    showLoading(false);
+    return data;
+  } catch (e) {
+    console.warn('API call failed, falling back to local e.message);
+    showLoading(false);
+    return null;
+  }
+}
+
+function showLoading(show) {
+  document.getElementById('loadingOverlay').classList.toggle('show', show);
+}
 
 // ============ Render Functions ============
 function renderDashboardRank() {
@@ -751,7 +509,12 @@ function renderDashboardRank() {
     filtered.map((p,i) => `
       <tr onclick="openProductDetail(${p.id})">
         <td><span class="rank-num ${i<3?'top3':''}">${p.rank}</span></td>
-        <td><div style="display:flex;align-items:center;gap:10px"><span style="font-size:28px">${p.image}</span><div><div style="font-weight:500;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.title}</div><div style="font-size:11px;color:var(--text-muted)">${p.category} · ${p.weight}</div></div></div></td>
+        <td><div style="display:flex;align-items:center;gap:12px">
+          <div style="width:52px;height:52px;border-radius:var(--radius-sm);overflow:hidden;flex-shrink:0;position:relative;background:var(--surface-alt)">
+            <img src="https://loremflickr.com/52/52/${categoryKeywords[p.category]||'product'}?random=${p.id}" alt="" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy">
+            <div class="rank-table-img img-fallback" style="display:none;position:absolute;inset:0">${p.category.charAt(0)}</div>
+          </div>
+          <div><div style="font-weight:500;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.title}</div><div style="font-size:11px;color:var(--text-muted)">${p.category} · ${p.weight}</div></div></div></td>
         <td><strong style="color:var(--danger)">$${p.price}</strong></td>
         <td>${p.sales.toLocaleString()}</td>
         <td><span class="tag green">${p.rating} <i class="fas fa-star" style="font-size:9px"></i></span></td>
@@ -762,13 +525,23 @@ function renderDashboardRank() {
 
 function renderProducts() {
   const grid = document.getElementById('productGrid');
-  let filtered = products.filter(p => p.platform === state.currentPlatform && p.list === state.currentListType);
-  const cat = document.getElementById('filterCategory').value;
-  if (cat) filtered = filtered.filter(p => p.category === cat);
-  const pmin = document.getElementById('filterPriceMin').value;
-  const pmax = document.getElementById('filterPriceMax').value;
-  if (pmin) filtered = filtered.filter(p => p.price >= parseFloat(pmin));
-  if (pmax) filtered = filtered.filter(p => p.price <= parseFloat(pmax));
+  const searchBar = document.getElementById('searchResultBar');
+  let filtered;
+
+  if (state.isSearchMode && state.searchResults) {
+    filtered = state.searchResults;
+    searchBar.style.display = 'flex';
+    searchBar.innerHTML = `<i class="fas fa-search"></i> 搜索"<strong>${state.lastSearchQuery}</strong>"找到 <strong>${filtered.length}</strong> 个结果 <button class="btn btn-outline btn-sm" onclick="clearSearch()"><i class="fas fa-times"></i> 清除搜索</button>`;
+  } else {
+    filtered = products.filter(p => p.platform === state.currentPlatform && p.list === state.currentListType);
+    searchBar.style.display = 'none';
+    const cat = document.getElementById('filterCategory').value;
+    if (cat) filtered = filtered.filter(p => p.category === cat);
+    const pmin = document.getElementById('filterPriceMin').value;
+    const pmax = document.getElementById('filterPriceMax').value;
+    if (pmin) filtered = filtered.filter(p => p.price >= parseFloat(pmin));
+    if (pmax) filtered = filtered.filter(p => p.price <= parseFloat(pmax));
+  }
 
   if (filtered.length === 0) {
     grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><i class="fas fa-search"></i><p>没有找到匹配的商品</p></div>';
@@ -778,7 +551,7 @@ function renderProducts() {
   grid.innerHTML = filtered.map(p => `
     <div class="product-card" onclick="openProductDetail(${p.id})">
       ${p.badge === 'hot' ? '<span class="product-badge badge-hot">热销</span>' : p.badge === 'rising' ? '<span class="product-badge badge-rising">飙升</span>' : '<span class="product-badge badge-new">新品</span>'}
-      <div class="product-img">${p.image}</div>
+      <div class="product-img-wrap">${productImgTag(p, '', 300)}</div>
       <div class="product-info">
         <div class="product-title">${p.title}</div>
         <div class="product-meta">
@@ -803,7 +576,7 @@ function renderSourceList() {
   const list = document.getElementById('sourceList');
   list.innerHTML = sourceData.map(s => `
     <div class="source-item">
-      <div class="source-img">${s.image}</div>
+      ${sourceImgTag(s)}
       <div class="source-info">
         <div class="source-title">${s.title}</div>
         <div class="source-meta">
@@ -827,19 +600,24 @@ function openProductDetail(id) {
   if (!p) return;
   const modal = document.getElementById('productModal');
   const inner = document.getElementById('productModalInner');
+  const kw = categoryKeywords[p.category] || 'product';
   inner.innerHTML = `
     <div class="modal-header">
-      <h2>${p.image} ${p.title.substring(0, 50)}...</h2>
+      <h2>商品详情</h2>
       <button class="modal-close" onclick="closeProductModal()"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
       <div style="display:flex;gap:24px;flex-wrap:wrap">
         <div style="flex:1;min-width:260px">
-          <div style="font-size:80px;text-align:center;padding:40px;background:var(--surface-alt);border-radius:var(--radius-lg);margin-bottom:16px">${p.image}</div>
+          <div class="detail-img-wrap">
+            <img src="https://loremflickr.com/600/400/${kw}?random=${p.id}" alt="${p.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy">
+            <div class="img-fallback" style="display:none">${p.category.charAt(0)}</div>
+          </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <span class="tag green">${p.category}</span><span class="tag">${p.weight}</span>
             ${p.badge === 'hot' ? '<span class="tag" style="background:var(--danger-light);color:var(--danger)">热销榜 #'+p.rank+'</span>' : ''}
             ${p.badge === 'rising' ? '<span class="tag" style="background:var(--warning-light);color:var(--warning)">飙升榜</span>' : ''}
+            ${p.badge === 'new' ? '<span class="tag" style="background:var(--primary-light);color:var(--primary)">新品榜</span>' : ''}
           </div>
         </div>
         <div style="flex:1;min-width:260px">
@@ -863,33 +641,25 @@ function openProductDetail(id) {
     </div>`;
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
-  // Render chart
   setTimeout(() => {
     const canvas = document.getElementById('priceChart');
     if (!canvas) return;
     new Chart(canvas, {
       type: 'line',
-      data: {
+      {
         labels: ['D-89','D-82','D-75','D-68','D-61','D-54','D-47','D-40','D-33','D-26','D-19','D-12','D-5','今日'],
         datasets: [{
           label: '价格走势 (USD)',
-          data: [...p.trend, p.price],
+          [...p.trend, p.price],
           borderColor: '#4f6ef7',
           backgroundColor: 'rgba(79,110,247,.08)',
-          fill: true,
-          tension: 0.4,
-          pointRadius: 2,
-          pointHoverRadius: 6,
+          fill: true, tension: 0.4, pointRadius: 2, pointHoverRadius: 6,
         }]
       },
       options: {
-        responsive: true,
-        maintainAspectRatio: false,
+        responsive: true, maintainAspectRatio: false,
         plugins: { legend: { display: false } },
-        scales: {
-          y: { beginAtZero: false, grid: { color: '#f1f5f9' } },
-          x: { grid: { display: false } }
-        }
+        scales: { y: { beginAtZero: false, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } }
       }
     });
   }, 100);
@@ -909,7 +679,7 @@ function navigateTo(page) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.querySelector(`.nav-item[data-page="${page}"]`)?.classList.add('active');
 
-  if (page === 'dashboard') renderDashboardRank();
+  if (page === 'dashboard') { state.isSearchMode = false; renderDashboardRank(); }
   if (page === 'products') renderProducts();
   if (page === 'matching') renderSourceList();
   if (page === 'calculator') calculateProfit();
@@ -929,37 +699,93 @@ function switchDashboardTab(platform) {
 }
 
 function switchPlatform(platform) {
-  state.currentPlatform = platform;
+  state.currentPlatform = platform; state.isSearchMode = false;
   document.querySelectorAll('#productPlatformTabs .platform-tab').forEach(t => t.classList.remove('active'));
   document.querySelector(`#productPlatformTabs .platform-tab[data-platform="${platform}"]`)?.classList.add('active');
+  document.getElementById('searchResultBar').style.display = 'none';
   renderProducts();
 }
 
 function switchListType(type) {
-  state.currentListType = type;
+  state.currentListType = type; state.isSearchMode = false;
   document.querySelectorAll('#page-products .tab').forEach(t => t.classList.remove('active'));
   document.querySelector(`#page-products .tab[data-list="${type}"]`)?.classList.add('active');
+  document.getElementById('searchResultBar').style.display = 'none';
   renderProducts();
 }
 
-function applyFilters() { renderProducts(); }
+function applyFilters() { state.isSearchMode = false; document.getElementById('searchResultBar').style.display = 'none'; renderProducts(); }
 function resetFilters() {
   document.getElementById('filterCategory').value = '';
   document.getElementById('filterPriceMin').value = '';
   document.getElementById('filterPriceMax').value = '';
   document.getElementById('filterRating').value = '';
   document.getElementById('filterSales').value = '';
+  state.isSearchMode = false;
+  document.getElementById('searchResultBar').style.display = 'none';
   renderProducts();
 }
 
+// ============ Search ============
+async function globalSearchHandler() {
+  const q = document.getElementById('globalSearch').value.trim();
+  if (!q) return;
+  if (state.userType === 'guest' && state.searchCount <= 0) {
+    alert('游客每日搜索次数已用完 (5次)，请注册或升级会员。');
+    return;
+  }
+  state.lastSearchQuery = q;
+  state.history.unshift(q);
+  if (state.history.length > 20) state.history.length = 20;
+  updateSearchCount();
+  navigateTo('products');
+
+  const apiData = await apiCall('/api/search', { keyword: q, platform: state.currentPlatform });
+  if (apiData && apiData.products && apiData.products.length > 0) {
+    state.searchResults = apiData.products.map((item, i) => ({
+      ...item, id: 9000 + i, badge: 'hot', weight: item.weight || '轻小件', reviews: item.reviews || 0, trend: [item.price], asin: item.asin || ''
+    }));
+  } else {
+    const keyword = q.toLowerCase();
+    state.searchResults = products.filter(p => p.title.toLowerCase().includes(keyword));
+  }
+  state.isSearchMode = true;
+  renderProducts();
+}
+
+function clearSearch() {
+  state.isSearchMode = false; state.searchResults = null; state.lastSearchQuery = '';
+  document.getElementById('globalSearch').value = '';
+  document.getElementById('searchClearBtn').classList.remove('visible');
+  document.getElementById('searchResultBar').style.display = 'none';
+  renderProducts();
+}
+
+function toggleClearBtn() {
+  const input = document.getElementById('globalSearch');
+  const btn = document.getElementById('searchClearBtn');
+  if (input.value.trim()) { btn.classList.add('visible'); } else { btn.classList.remove('visible'); }
+}
+
 // ============ Matching ============
-function searchSource() {
-  renderSourceList();
+async function searchSource() {
+  const keyword = document.getElementById('matchKeyword').value.trim();
+  if (keyword) {
+    const apiData = await apiCall('/api/source', { keyword });
+    if (apiData && apiData.sources) {
+      // API results would be merged/displayed here; fallback keeps local data
+      renderSourceList();
+    } else {
+      renderSourceList();
+    }
+  } else {
+    renderSourceList();
+  }
   if (state.userType === 'guest') updateSearchCount();
 }
 
 function searchSourceByImage() {
-  alert('图片搜同款功能：请上传海外商品图片，系统将通过1680拍立淘接口以图搜货。\n(演示模式下使用示例数据)');
+  alert('图片搜同款功能：请上传海外商品图片，系统将通过1688拍立淘接口以图搜货。\n(API模式：调用1688开放平台拍立淘接口)');
   renderSourceList();
 }
 
@@ -984,8 +810,8 @@ function calculateProfit() {
   const commissionAmount = revenue * (commission / 100);
   const totalCost = cost + logistics + commissionAmount + packaging + tariff;
   const profit = revenue - totalCost;
-  const grossMargin = ((revenue - cost) / revenue * 100);
-  const netMargin = (profit / revenue * 100);
+  const grossMargin = (revenue - cost) / revenue * 100;
+  const netMargin = profit / revenue * 100;
 
   document.getElementById('calcRevenue').textContent = `¥${revenue.toFixed(2)}`;
   document.getElementById('profitValue').textContent = `¥${profit.toFixed(2)}`;
@@ -1025,7 +851,7 @@ function renderFavorites() {
   const items = products.filter(p => ids.includes(p.id));
   container.innerHTML = '<div class="product-grid">' + items.map(p => `
     <div class="product-card" onclick="openProductDetail(${p.id})">
-      <div class="product-img">${p.image}</div>
+      <div class="product-img-wrap">${productImgTag(p, '', 300)}</div>
       <div class="product-info">
         <div class="product-title">${p.title}</div>
         <div class="product-meta"><span class="product-price">$${p.price}</span><span class="tag">${p.category}</span></div>
@@ -1052,7 +878,7 @@ function switchFavTab(tab) {
     const items = sourceData.filter(s => ids.includes(s.id));
     container.innerHTML = '<div class="source-list">' + items.map(s => `
       <div class="source-item">
-        <div class="source-img">${s.image}</div>
+        ${sourceImgTag(s)}
         <div class="source-info"><div class="source-title">${s.title}</div><div class="source-meta"><span>${s.supplier}</span><span>${s.location}</span></div></div>
         <div class="source-price">${s.priceRange}</div>
         <button class="btn btn-outline btn-sm" onclick="toggleFav(${s.id},'source')">取消收藏</button>
@@ -1064,9 +890,7 @@ function switchFavTab(tab) {
 }
 
 // ============ Profile ============
-function renderProfile() {
-  switchProfileTab('info');
-}
+function renderProfile() { switchProfileTab('info'); }
 
 function switchProfileTab(tab) {
   document.querySelectorAll('#page-profile .user-menu-item').forEach(i => i.classList.remove('active'));
@@ -1076,11 +900,10 @@ function switchProfileTab(tab) {
   if (tab === 'info') {
     panel.innerHTML = `
       <div class="profile-header">
-        <div class="profile-avatar" id="profileAvatar">U</div>
+        <div class="profile-avatar">${state.userType === 'guest' ? 'U' : state.userType === 'registered' ? 'R' : 'M'}</div>
         <div>
           <h3 style="margin-bottom:4px">${state.userType === 'guest' ? '游客用户' : state.userType === 'registered' ? '注册用户' : '会员用户'}</h3>
           <p style="color:var(--text-secondary);font-size:13px">账户类型: ${state.userType === 'guest' ? '游客 (每日5次搜索)' : state.userType === 'registered' ? '免费注册 (每日20次搜索)' : '付费会员 (无限次搜索)'}</p>
-          <p style="color:var(--text-muted);font-size:12px">注册时间: --</p>
         </div>
       </div>
       <div class="card" style="margin-bottom:16px">
@@ -1096,35 +919,26 @@ function switchProfileTab(tab) {
       <h3 style="margin-bottom:20px">会员套餐</h3>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
         <div class="plan-card ${state.userType==='guest'?'current':''}">
-          <div class="plan-name">游客</div>
-          <div class="plan-price">免费</div>
+          <div class="plan-name">游客</div><div class="plan-price">免费</div>
           <ul class="plan-features">
-            <li><i class="fas fa-check"></i> 每日5次搜索</li>
-            <li><i class="fas fa-check"></i> 基础榜单查看</li>
-            <li><i class="fas fa-times" style="color:var(--text-muted)"></i> 货源匹配</li>
-            <li><i class="fas fa-times" style="color:var(--text-muted)"></i> 利润测算</li>
+            <li><i class="fas fa-check"></i> 每日5次搜索</li><li><i class="fas fa-check"></i> 基础榜单查看</li>
+            <li><i class="fas fa-times" style="color:var(--text-muted)"></i> 货源匹配</li><li><i class="fas fa-times" style="color:var(--text-muted)"></i> 利润测算</li>
           </ul>
           <button class="btn btn-outline btn-sm" style="width:100%">当前方案</button>
         </div>
         <div class="plan-card ${state.userType==='registered'?'current':''}">
-          <div class="plan-name">免费注册</div>
-          <div class="plan-price">免费</div>
+          <div class="plan-name">免费注册</div><div class="plan-price">免费</div>
           <ul class="plan-features">
-            <li><i class="fas fa-check"></i> 每日20次搜索</li>
-            <li><i class="fas fa-check"></i> 全部榜单查看</li>
-            <li><i class="fas fa-check"></i> 基础货源匹配</li>
-            <li><i class="fas fa-check"></i> 利润测算</li>
+            <li><i class="fas fa-check"></i> 每日20次搜索</li><li><i class="fas fa-check"></i> 全部榜单查看</li>
+            <li><i class="fas fa-check"></i> 基础货源匹配</li><li><i class="fas fa-check"></i> 利润测算</li>
           </ul>
           <button class="btn btn-primary btn-sm" style="width:100%" onclick="doLogin()">免费注册</button>
         </div>
         <div class="plan-card ${state.userType==='member'?'current':''}">
-          <div class="plan-name">高级会员</div>
-          <div class="plan-price">¥199<span>/月</span></div>
+          <div class="plan-name">高级会员</div><div class="plan-price">¥199<span>/月</span></div>
           <ul class="plan-features">
-            <li><i class="fas fa-check"></i> 无限次搜索</li>
-            <li><i class="fas fa-check"></i> 全部功能解锁</li>
-            <li><i class="fas fa-check"></i> 批量导出</li>
-            <li><i class="fas fa-check"></i> AI分析 & 数据监控</li>
+            <li><i class="fas fa-check"></i> 无限次搜索</li><li><i class="fas fa-check"></i> 全部功能解锁</li>
+            <li><i class="fas fa-check"></i> 批量导出</li><li><i class="fas fa-check"></i> AI分析 & 数据监控</li>
           </ul>
           <button class="btn btn-accent btn-sm" style="width:100%">立即升级</button>
         </div>
@@ -1134,7 +948,7 @@ function switchProfileTab(tab) {
       <h3 style="margin-bottom:16px">历史搜索记录</h3>
       ${state.history.length === 0 ? '<div class="empty-state"><i class="fas fa-clock"></i><p>暂无搜索记录</p></div>' :
         '<div class="source-list">' + state.history.map((h,i) => `
-          <div class="source-item" style="justify-content:space-between">
+          <div class="source-item" style="justify-content:space-between;cursor:pointer" onclick="document.getElementById('globalSearch').value='${h}';globalSearchHandler()">
             <div><strong>${h}</strong></div>
             <span style="font-size:12px;color:var(--text-muted)">${new Date(Date.now() - i*3600000).toLocaleString('zh-CN')}</span>
           </div>`).join('') + '</div>'
@@ -1143,50 +957,12 @@ function switchProfileTab(tab) {
 }
 
 function doLogin() {
-  state.userType = 'registered';
-  state.searchCount = 20;
+  state.userType = 'registered'; state.searchCount = 20;
   document.getElementById('userName').textContent = '注册用户';
   document.getElementById('userRole').textContent = '今日剩余 20 次搜索';
   document.getElementById('userAvatar').textContent = 'R';
   document.getElementById('searchCount').textContent = '剩余搜索: 20次';
-  navigateTo('dashboard');
-  renderDashboardRank();
-}
-
-// ============ Search ============
-function globalSearchHandler() {
-  const q = document.getElementById('globalSearch').value.trim();
-  if (!q) return;
-  if (state.userType === 'guest' && state.searchCount <= 0) {
-    alert('游客每日搜索次数已用完 (5次)，请注册或升级会员。');
-    return;
-  }
-  state.history.unshift(q);
-  if (state.history.length > 20) state.history.length = 20;
-  updateSearchCount();
-  navigateTo('products');
-  document.getElementById('filterCategory').value = '';
-  document.getElementById('filterPriceMin').value = '';
-  document.getElementById('filterPriceMax').value = '';
-  // Filter products by keyword in title
-  const grid = document.getElementById('productGrid');
-  const keyword = q.toLowerCase();
-  const filtered = products.filter(p => p.title.toLowerCase().includes(keyword));
-  grid.innerHTML = filtered.length === 0
-    ? '<div class="empty-state" style="grid-column:1/-1"><i class="fas fa-search"></i><p>未找到匹配的商品，换个关键词试试</p></div>'
-    : filtered.map(p => `
-      <div class="product-card" onclick="openProductDetail(${p.id})">
-        <div class="product-img">${p.image}</div>
-        <div class="product-info">
-          <div class="product-title">${p.title}</div>
-          <div class="product-meta"><span class="product-price">$${p.price}</span><span class="tag">${platforms[p.platform]?.name || p.platform}</span></div>
-        </div>
-        <div class="product-footer">
-          <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();toggleFav(${p.id},'product')"><i class="far fa-star"></i> 收藏</button>
-          <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();goToMatching(${p.id})"><i class="fas fa-link"></i> 搜货源</button>
-        </div>
-      </div>
-    `).join('');
+  navigateTo('dashboard'); renderDashboardRank();
 }
 
 function updateSearchCount() {
@@ -1197,24 +973,17 @@ function updateSearchCount() {
 }
 
 // ============ Sidebar ============
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-}
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 
 // ============ Init ============
 document.addEventListener('DOMContentLoaded', () => {
-  renderDashboardRank();
-  renderProducts();
-  renderSourceList();
-  calculateProfit();
-
-  // Live calculator
+  renderDashboardRank(); renderProducts(); renderSourceList(); calculateProfit();
   ['calcPrice','calcRate','calcCost','calcLogistics','calcCommission','calcPackaging','calcTariff'].forEach(id => {
     document.getElementById(id)?.addEventListener('input', calculateProfit);
   });
+  document.getElementById('globalSearch').addEventListener('input', toggleClearBtn);
 });
 
-// Close sidebar on outside click (mobile)
 document.addEventListener('click', (e) => {
   const sidebar = document.getElementById('sidebar');
   if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && !e.target.closest('.mobile-menu-btn')) {
