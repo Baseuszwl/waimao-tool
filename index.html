@@ -491,7 +491,7 @@ async function apiCall(endpoint, params) {
     showLoading(false);
     return data;
   } catch (e) {
-    console.warn('API call failed, falling back to local e.message);
+    console.warn('API call failed, falling back to local', e.message);
     showLoading(false);
     return null;
   }
