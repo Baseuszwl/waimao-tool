@@ -367,19 +367,30 @@ const state = {
 };
 
 // ============ Image Helpers ============
-const categoryKeywords = {
-  '电子产品': 'electronics,gadget',
-  '家居厨房': 'kitchen,home',
-  '服装配饰': 'fashion,accessories',
-  '运动户外': 'sports,outdoor',
-  '宠物用品': 'pet,products',
-  '玩具游戏': 'toys,games',
-  '美妆个护': 'beauty,cosmetics'
-};
+const fillerWords = new Set([
+  'pro','max','ultra','plus','lite','mini','new','2024','2025','2026',
+  'with','and','for','set','of','in','the','a','an','to','by','no',
+  'pack','combo','kit','edition','version','series','design','style',
+  'premium','advanced','professional','original','genuine','official'
+]);
+
+function extractProductKW(title) {
+  // 取标题第一个分隔符之前的部分作为核心产品名
+  const main = title.split(/ [-–|:—] /)[0].toLowerCase();
+  // 分词并过滤数字/单位/虚词/短词
+  const words = main.split(/[\s,;\/]+/).filter(w => {
+    const clean = w.replace(/[^a-z0-9]/g, '');
+    if (!clean || /^\d+(\.\d+)?(oz|ml|g|kg|cm|mm|inch|in|w|a|h|m|ft|gb|tb|mb|hz|s)$/i.test(clean)) return false;
+    if (clean.length < 3) return false;
+    if (fillerWords.has(clean)) return false;
+    return true;
+  });
+  return words.slice(0, 4).join(',') || 'product';
+}
 
 function productImgTag(product, cls, size) {
   const w = size || 400; const h = size ? size : 300;
-  const kw = categoryKeywords[product.category] || 'product';
+  const kw = extractProductKW(product.title);
   // 优先使用 realImage（真实电商商品图），fallback 到 loremflickr
   const realImg = product.realImage || '';
   const primaryUrl = realImg || `https://loremflickr.com/${w}/${h}/${kw}?random=${product.id}`;
