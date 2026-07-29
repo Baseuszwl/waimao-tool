@@ -355,7 +355,7 @@ body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
 
 <script>
 // ============ Config ============
-const apiBaseUrl = ''; // 设为空则跳过API直接本地搜索；填入真实后端地址即可启用API
+const apiBaseUrl = ''; // 留空则通过CORS代理从搜索引擎拉取真实商品图；填入Vercel后端地址则使用自建API
 
 // ============ State ============
 const state = {
@@ -411,27 +411,101 @@ function sourceImgTag(source) {
 
 // ============ Real Product Image Loader ============
 const imageCache = {};
+const CORS_PROXY = 'https://corsproxy.io/?';
+
+async function searchBingImages(query) {
+  try {
+    const searchUrl = CORS_PROXY + encodeURIComponent(
+      'https://www.bing.com/images/search?q=' + encodeURIComponent(query) + '&qft=+filterui:photo-transparent+filterui:license-L2_L3_L4_L5_L6_L7'
+    );
+    const resp = await fetch(searchUrl);
+    const html = await resp.text();
+    // Bing stores image URLs in murl attribute within JSON-like structures
+    const urls = [];
+    const murlRegex = /"murl"\s*:\s*"(https?:\/\/[^"]+)"/g;
+    let match;
+    while ((match = murlRegex.exec(html)) !== null) {
+      const url = match[1].replace(/\\u002f/g, '/').replace(/\\\//g, '/');
+      if (url && !url.includes('bing.com') && !url.includes('microsoft.com')) {
+        urls.push(url);
+        if (urls.length >= 5) break;
+      }
+    }
+    return urls;
+  } catch (e) {
+    console.warn('Bing image search failed:', e.message);
+    return [];
+  }
+}
+
+async function searchDDGImages(query) {
+  try {
+    const searchUrl = CORS_PROXY + encodeURIComponent(
+      'https://duckduckgo.com/?q=' + encodeURIComponent(query) + '&iax=images&ia=images'
+    );
+    const resp = await fetch(searchUrl);
+    const html = await resp.text();
+    const urls = [];
+    const imgRegex = /https?:\/\/[^"'\s]+\.(?:jpg|jpeg|png|webp)/gi;
+    let match;
+    while ((match = imgRegex.exec(html)) !== null) {
+      const url = match[0];
+      if (!url.includes('duckduckgo.com') && !url.includes('favicon') && !url.includes('logo') && !url.includes('icon')) {
+        urls.push(url);
+        if (urls.length >= 5) break;
+      }
+    }
+    return urls;
+  } catch (e) {
+    console.warn('DDG image search failed:', e.message);
+    return [];
+  }
+}
 
 async function fetchProductImages(productId, query) {
   if (imageCache[productId]) return imageCache[productId];
-  // 仅当 apiBaseUrl 为 null 时跳过（'' 表示同源，正常调用）
-  if (apiBaseUrl === null) return null;
-  try {
-    const url = apiBaseUrl ? `${apiBaseUrl}/product-image?q=` : `/api/product-image?q=`;
-    const resp = await fetch(url + encodeURIComponent(query));
-    const data = await resp.json();
-    if (data.success && data.images && data.images.length > 0) {
-      imageCache[productId] = data.images;
-      return data.images;
+
+  // Try Vercel API first if configured
+  if (apiBaseUrl && apiBaseUrl !== '') {
+    try {
+      const url = apiBaseUrl + '/product-image?q=' + encodeURIComponent(query);
+      const resp = await fetch(url);
+      const data = await resp.json();
+      if (data.success && data.images && data.images.length > 0) {
+        imageCache[productId] = data.images;
+        return data.images;
+      }
+    } catch (e) {
+      console.warn('Vercel API failed:', e.message);
     }
-  } catch (e) {
-    console.warn('Image API fetch failed for', query, e.message);
   }
+
+  // GitHub Pages / static mode: search engines via CORS proxy
+  const cacheKey = 'img_' + productId;
+  try {
+    const cached = sessionStorage.getItem(cacheKey);
+    if (cached) {
+      const urls = JSON.parse(cached);
+      imageCache[productId] = urls;
+      return urls;
+    }
+  } catch(e) {}
+
+  let urls = await searchBingImages(query);
+  if (urls.length === 0) {
+    urls = await searchDDGImages(query);
+  }
+
+  if (urls.length > 0) {
+    imageCache[productId] = urls;
+    try { sessionStorage.setItem(cacheKey, JSON.stringify(urls)); } catch(e) {}
+    return urls;
+  }
+
   return null;
 }
 
 async function loadProductImages(containerSelector) {
-  if (apiBaseUrl === null) return;
   const imgs = document.querySelectorAll(`${containerSelector} img[data-api-query]`);
   const batch = [];
   for (const img of imgs) {
