@@ -817,7 +817,7 @@ function openProductDetail(id) {
       <div style="display:flex;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
         <button class="btn btn-primary btn-lg" onclick="closeProductModal();goToMatching(${p.id})"><i class="fas fa-link"></i> 匹配1688货源</button>
         <button class="btn btn-outline btn-lg" onclick="toggleFav(${p.id},'product')"><i class="far fa-star"></i> 收藏商品</button>
-        ${p.asin ? '<a href="https://www.amazon.com/dp/' + p.asin + '" target="_blank" class="btn btn-outline btn-lg" style="text-decoration:none"><i class="fab fa-amazon"></i> 在Amazon查看</a>' : ''}
+        ${p.asin ? '<a href="https://www.amazon.com/s?k=' + encodeURIComponent(p.title) + '" target="_blank" class="btn btn-outline btn-lg" style="text-decoration:none"><i class="fab fa-amazon"></i> 在Amazon查看</a>' : ''}
       </div>
     </div>`;
   modal.style.display = 'flex';
