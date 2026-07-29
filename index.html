@@ -396,16 +396,56 @@ function productImgTag(product, cls, size) {
   const primaryUrl = realImg || `https://loremflickr.com/${w}/${h}/${kw}?random=${product.id}`;
   const fallbackUrl = realImg ? `https://loremflickr.com/${w}/${h}/${kw}?random=${product.id}` : '';
   const fallback = product.category ? product.category.charAt(0) : 'P';
+  const apiAttrs = `data-api-query="${product.title.replace(/"/g,'&quot;')}" data-product-id="${product.id}"`;
   // 双层 fallback: realImage -> loremflickr -> emoji
   if (realImg) {
-    return `<img src="${primaryUrl}" alt="${product.title}" class="${cls||''}" onerror="var fb=this.nextElementSibling;if(fb&&fb.tagName==='IMG'){this.style.display='none';fb.style.display='';fb.onerror=function(){this.style.display='none';this.nextElementSibling.style.display='flex'}}else{this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='flex'}" loading="lazy"><img src="${fallbackUrl}" alt="" style="display:none;width:100%;height:100%;object-fit:cover" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="img-fallback" style="display:none">${fallback}</div>`;
+    return `<img src="${primaryUrl}" ${apiAttrs} alt="${product.title}" class="${cls||''}" onerror="var fb=this.nextElementSibling;if(fb&&fb.tagName==='IMG'){this.style.display='none';fb.style.display='';fb.onerror=function(){this.style.display='none';this.nextElementSibling.style.display='flex'}}else{this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='flex'}" loading="lazy"><img src="${fallbackUrl}" alt="" style="display:none;width:100%;height:100%;object-fit:cover" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="img-fallback" style="display:none">${fallback}</div>`;
   }
-  return `<img src="${primaryUrl}" alt="${product.title}" class="${cls||''}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><div class="img-fallback" style="display:none">${fallback}</div>`;
+  return `<img src="${primaryUrl}" ${apiAttrs} alt="${product.title}" class="${cls||''}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><div class="img-fallback" style="display:none">${fallback}</div>`;
 }
 
 function sourceImgTag(source) {
   const url = `https://loremflickr.com/300/300/factory,product?random=${source.id + 100}`;
   return `<img src="${url}" alt="${source.title}" class="source-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><div class="source-img img-fallback" style="display:none"><i class="fas fa-industry"></i></div>`;
+}
+
+// ============ Real Product Image Loader ============
+const imageCache = {};
+
+async function fetchProductImages(productId, query) {
+  if (imageCache[productId]) return imageCache[productId];
+  // 仅当 apiBaseUrl 为 null 时跳过（'' 表示同源，正常调用）
+  if (apiBaseUrl === null) return null;
+  try {
+    const url = apiBaseUrl ? `${apiBaseUrl}/product-image?q=` : `/api/product-image?q=`;
+    const resp = await fetch(url + encodeURIComponent(query));
+    const data = await resp.json();
+    if (data.success && data.images && data.images.length > 0) {
+      imageCache[productId] = data.images;
+      return data.images;
+    }
+  } catch (e) {
+    console.warn('Image API fetch failed for', query, e.message);
+  }
+  return null;
+}
+
+async function loadProductImages(containerSelector) {
+  if (apiBaseUrl === null) return;
+  const imgs = document.querySelectorAll(`${containerSelector} img[data-api-query]`);
+  const batch = [];
+  for (const img of imgs) {
+    if (img.dataset.loaded === '1') continue;
+    const pid = img.dataset.productId;
+    const query = img.dataset.apiQuery;
+    batch.push(fetchProductImages(pid, query).then(imgs => {
+      if (imgs && imgs.length > 0) {
+        img.src = imgs[0];
+        img.dataset.loaded = '1';
+      }
+    }));
+  }
+  await Promise.allSettled(batch);
 }
 
 // ============ Platforms ============
@@ -702,7 +742,7 @@ function renderDashboardRank() {
         <td><span class="rank-num ${i<3?'top3':''}">${p.rank}</span></td>
         <td><div style="display:flex;align-items:center;gap:12px">
           <div style="width:52px;height:52px;border-radius:var(--radius-sm);overflow:hidden;flex-shrink:0;position:relative;background:var(--surface-alt)">
-            <img src="https://loremflickr.com/52/52/${categoryKeywords[p.category]||'product'}?random=${p.id}" alt="" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy">
+            <img src="https://loremflickr.com/52/52/${extractProductKW(p.title)}?random=${p.id}" alt="" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy">
             <div class="rank-table-img img-fallback" style="display:none;position:absolute;inset:0">${p.category.charAt(0)}</div>
           </div>
           <div><div style="font-weight:500;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.title}</div><div style="font-size:11px;color:var(--text-muted)">${p.category} · ${p.weight}</div></div></div></td>
@@ -761,6 +801,7 @@ function renderProducts() {
       </div>
     </div>
   `).join('');
+  loadProductImages('#productGrid');
 }
 
 function renderSourceList() {
@@ -791,7 +832,6 @@ function openProductDetail(id) {
   if (!p) return;
   const modal = document.getElementById('productModal');
   const inner = document.getElementById('productModalInner');
-  const kw = categoryKeywords[p.category] || 'product';
   inner.innerHTML = `
     <div class="modal-header">
       <h2>商品详情</h2>
@@ -801,8 +841,7 @@ function openProductDetail(id) {
       <div style="display:flex;gap:24px;flex-wrap:wrap">
         <div style="flex:1;min-width:260px">
           <div class="detail-img-wrap">
-            <img src="${p.realImage || 'https://loremflickr.com/600/400/' + kw + '?random=' + p.id}" alt="${p.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy">
-            <div class="img-fallback" style="display:none">${p.category.charAt(0)}</div>
+            ${productImgTag(p, '', 600)}
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <span class="tag green">${p.category}</span><span class="tag">${p.weight}</span>
@@ -833,6 +872,7 @@ function openProductDetail(id) {
     </div>`;
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
+  loadProductImages('#productModalInner');
   setTimeout(() => {
     const canvas = document.getElementById('priceChart');
     if (!canvas) return;
@@ -1072,6 +1112,7 @@ function renderFavorites() {
       </div>
     </div>
   `).join('') + '</div>';
+  loadProductImages('#favContent .product-grid');
 }
 
 function switchFavTab(tab) {

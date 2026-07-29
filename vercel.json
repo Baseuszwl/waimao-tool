@@ -17,6 +17,10 @@
       "dest": "/api/api-server.js"
     },
     {
+      "src": "/api/product-image",
+      "dest": "/api/api-server.js"
+    },
+    {
       "src": "/api/health",
       "dest": "/api/health.js"
     },
